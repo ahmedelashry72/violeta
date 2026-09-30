@@ -96,6 +96,7 @@ $('#detailsNext').addEventListener('click',()=>{
   if(!formData.area){alert(currentLang==='ar'?'اكتب المساحة التقريبية.':'Enter the approximate area.');return}showStep('budget');
 });
 $('#submitProject').addEventListener('click',()=>{
+  saveLeadToDatabase();
   formData.name=$('#nameInput').value.trim();formData.phone=$('#phoneInput').value.trim();formData.email=$('#emailInput').value.trim();formData.whatsappPreferred=$('#whatsappPref').checked;
   if(!formData.name||!formData.phone){alert(currentLang==='ar'?'اكتب الاسم ورقم التواصل.':'Enter your name and phone number.');return}
   $('#summaryBox').value=buildSummary();showStep('success');
@@ -105,3 +106,25 @@ function buildSummary(){
 }
 $('#whatsappSend').addEventListener('click',()=>window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildSummary())}`,'_blank','noopener'));
 $('#copySummary').addEventListener('click',async()=>{await navigator.clipboard.writeText(buildSummary());alert(currentLang==='ar'?'تم نسخ الملخص.':'Summary copied.')});
+async function saveLeadToDatabase(){
+  const payload={
+    name:formData.name||'',
+    mobile:formData.phone||'',
+    project_type:formData.projectType||'',
+    service:formData.service||'',
+    spaces:Array.isArray(formData.rooms)?formData.rooms.join(', '):(formData.rooms||''),
+    region:formData.region||'',
+    budget:formData.budget||'',
+    notes:formData.details||'',
+    language:currentLang,
+    lead_source:'website',
+    status:'new'
+  };
+  const response=await fetch('/api/leads',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!response.ok)throw new Error('Lead save failed');
+  return response.json();
+}
