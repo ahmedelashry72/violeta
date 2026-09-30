@@ -5,5 +5,12 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "violeta-leads",
+      "database_id": "410ab3d5-ad65-4ebc-8280-00c3b808f315"
+    }
+  ]
 }
