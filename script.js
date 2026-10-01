@@ -115,6 +115,7 @@ $('#submitProject').addEventListener('click', async ()=>{
   $('#summaryBox').value=buildSummary();
   showStep('success');
 });
+function buildSummary(){
   return `طلب مشروع جديد — VIOLETA\n\nالاسم: ${formData.name}\nرقم التواصل: ${formData.phone}\nالبريد: ${formData.email||'-'}\nنوع المشروع: ${formData.projectType}${formData.commercialType?` — ${formData.commercialType}`:''}\nالخدمة: ${formData.service}\nالموقع: ${formData.region} — ${formData.city}\nنطاق المشروع: ${formData.scope}${formData.rooms.length?` — ${formData.rooms.join('، ')}`:''}\nالمساحة التقريبية: ${formData.area} م²\nيوجد مخطط: ${formData.plan||'-'}\nالميزانية: ${formData.budget}\nيفضل واتساب: ${formData.whatsappPreferred?'نعم':'لا'}\n\nسأرفق صور/مخطط المكان في الرسالة التالية إن كانت متوفرة.`;
 }
 $('#whatsappSend').addEventListener('click',()=>window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildSummary())}`,'_blank','noopener'));
