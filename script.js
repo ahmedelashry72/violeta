@@ -95,13 +95,26 @@ $('#detailsNext').addEventListener('click',()=>{
   formData.area=$('#areaInput').value;formData.plan=$('input[name="plan"]:checked')?.value||'';
   if(!formData.area){alert(currentLang==='ar'?'اكتب المساحة التقريبية.':'Enter the approximate area.');return}showStep('budget');
 });
-$('#submitProject').addEventListener('click',()=>{
-  saveLeadToDatabase();
-  formData.name=$('#nameInput').value.trim();formData.phone=$('#phoneInput').value.trim();formData.email=$('#emailInput').value.trim();formData.whatsappPreferred=$('#whatsappPref').checked;
-  if(!formData.name||!formData.phone){alert(currentLang==='ar'?'اكتب الاسم ورقم التواصل.':'Enter your name and phone number.');return}
-  $('#summaryBox').value=buildSummary();showStep('success');
+$('#submitProject').addEventListener('click', async ()=>{
+  formData.name=$('#nameInput').value.trim();
+  formData.phone=$('#phoneInput').value.trim();
+  formData.email=$('#emailInput').value.trim();
+  formData.whatsappPreferred=$('#whatsappPref').checked;
+
+  if(!formData.name||!formData.phone){
+    alert(currentLang==='ar'?'اكتب الاسم ورقم التواصل.':'Enter your name and phone number.');
+    return;
+  }
+
+  try {
+    await saveLeadToDatabase();
+  } catch (err) {
+    console.error('Lead save failed:', err);
+  }
+
+  $('#summaryBox').value=buildSummary();
+  showStep('success');
 });
-function buildSummary(){
   return `طلب مشروع جديد — VIOLETA\n\nالاسم: ${formData.name}\nرقم التواصل: ${formData.phone}\nالبريد: ${formData.email||'-'}\nنوع المشروع: ${formData.projectType}${formData.commercialType?` — ${formData.commercialType}`:''}\nالخدمة: ${formData.service}\nالموقع: ${formData.region} — ${formData.city}\nنطاق المشروع: ${formData.scope}${formData.rooms.length?` — ${formData.rooms.join('، ')}`:''}\nالمساحة التقريبية: ${formData.area} م²\nيوجد مخطط: ${formData.plan||'-'}\nالميزانية: ${formData.budget}\nيفضل واتساب: ${formData.whatsappPreferred?'نعم':'لا'}\n\nسأرفق صور/مخطط المكان في الرسالة التالية إن كانت متوفرة.`;
 }
 $('#whatsappSend').addEventListener('click',()=>window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildSummary())}`,'_blank','noopener'));
