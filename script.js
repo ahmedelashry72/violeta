@@ -134,7 +134,7 @@ async function saveLeadToDatabase(){
     lead_source:'website',
     status:'new'
   };
-  const response=await fetch('/api/leads',{
+  const response=await fetch('https://violeta.violeta-interiors.workers.dev/api/leads',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)
