@@ -1,21 +1,212 @@
 const WHATSAPP_NUMBER = '966555275203';
-const LEADS_API_URL = 'https://violeta.violeta-interiors.workers.dev/api/leads';
+
+const LEADS_API_URL =
+  'https://violeta.violeta-interiors.workers.dev/api/leads';
+
+const ANALYTICS_API_URL =
+  'https://violeta.violeta-interiors.workers.dev/api/analytics';
 
 let currentLang = 'ar';
 
-const $ = (s, scope = document) => scope.querySelector(s);
-const $$ = (s, scope = document) => [...scope.querySelectorAll(s)];
+const $ = (s, scope = document) =>
+  scope.querySelector(s);
 
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    $('#pageLoader')?.classList.add('is-hidden');
-  }, 350);
-});
+const $$ = (s, scope = document) =>
+  [...scope.querySelectorAll(s)];
 
-const yearEl = $('#year');
+
+// ======================================================
+// Analytics
+// ======================================================
+
+function createSessionId() {
+  if (
+    window.crypto &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID();
+  }
+
+  return (
+    Date.now().toString(36) +
+    '-' +
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
+}
+
+
+function getSessionId() {
+  try {
+    let sessionId =
+      sessionStorage.getItem(
+        'violeta_session_id'
+      );
+
+    if (!sessionId) {
+      sessionId =
+        createSessionId();
+
+      sessionStorage.setItem(
+        'violeta_session_id',
+        sessionId
+      );
+    }
+
+    return sessionId;
+
+  } catch (error) {
+    return createSessionId();
+  }
+}
+
+
+function getSessionStartedAt() {
+  try {
+    let value =
+      sessionStorage.getItem(
+        'violeta_session_started_at'
+      );
+
+    if (!value) {
+      value =
+        String(Date.now());
+
+      sessionStorage.setItem(
+        'violeta_session_started_at',
+        value
+      );
+    }
+
+    return Number(value);
+
+  } catch (error) {
+    return Date.now();
+  }
+}
+
+
+const analyticsSessionId =
+  getSessionId();
+
+const analyticsSessionStartedAt =
+  getSessionStartedAt();
+
+
+function trackEvent(
+  eventName,
+  step = '',
+  metadata = {}
+) {
+  const payload = {
+    session_id:
+      analyticsSessionId,
+
+    event_name:
+      eventName,
+
+    step:
+      step || '',
+
+    page:
+      window.location.pathname || '/',
+
+    metadata: {
+      ...metadata,
+      language:
+        currentLang,
+
+      referrer:
+        document.referrer || '',
+
+      url:
+        window.location.href
+    }
+  };
+
+  fetch(
+    ANALYTICS_API_URL,
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type':
+          'application/json'
+      },
+
+      body:
+        JSON.stringify(payload),
+
+      keepalive: true
+    }
+  ).catch(error => {
+    console.warn(
+      'Analytics event failed:',
+      eventName,
+      error
+    );
+  });
+}
+
+
+// ======================================================
+// Page Load
+// ======================================================
+
+window.addEventListener(
+  'load',
+  () => {
+    setTimeout(() => {
+      $('#pageLoader')
+        ?.classList
+        .add('is-hidden');
+    }, 350);
+
+    trackEvent(
+      'page_view',
+      'home',
+      {
+        title:
+          document.title
+      }
+    );
+  }
+);
+
+
+window.addEventListener(
+  'pagehide',
+  () => {
+    const durationSeconds =
+      Math.max(
+        0,
+        Math.round(
+          (
+            Date.now() -
+            analyticsSessionStartedAt
+          ) / 1000
+        )
+      );
+
+    trackEvent(
+      'session_end',
+      '',
+      {
+        duration_seconds:
+          durationSeconds
+      }
+    );
+  }
+);
+
+
+const yearEl =
+  $('#year');
 
 if (yearEl) {
-  yearEl.textContent = new Date().getFullYear();
+  yearEl.textContent =
+    new Date().getFullYear();
 }
 
 
@@ -23,46 +214,89 @@ if (yearEl) {
 // Header + Mobile Navigation
 // ======================================================
 
-const header = $('#siteHeader');
-const menuToggle = $('#menuToggle');
-const mainNav = $('#mainNav');
+const header =
+  $('#siteHeader');
+
+const menuToggle =
+  $('#menuToggle');
+
+const mainNav =
+  $('#mainNav');
+
 
 window.addEventListener(
   'scroll',
   () => {
-    header?.classList.toggle('scrolled', window.scrollY > 25);
+    header
+      ?.classList
+      .toggle(
+        'scrolled',
+        window.scrollY > 25
+      );
   },
-  { passive: true }
+  {
+    passive: true
+  }
 );
 
-menuToggle?.addEventListener('click', () => {
-  mainNav?.classList.toggle('is-open');
-});
 
-$$('#mainNav a').forEach(link => {
-  link.addEventListener('click', () => {
-    mainNav?.classList.remove('is-open');
-  });
-});
+menuToggle?.addEventListener(
+  'click',
+  () => {
+    mainNav
+      ?.classList
+      .toggle('is-open');
+  }
+);
+
+
+$$('#mainNav a').forEach(
+  link => {
+    link.addEventListener(
+      'click',
+      () => {
+        mainNav
+          ?.classList
+          .remove('is-open');
+      }
+    );
+  }
+);
 
 
 // ======================================================
 // Hero Slider
 // ======================================================
 
-const heroSlides = $$('.hero-slide');
+const heroSlides =
+  $$('.hero-slide');
 
 let heroSlideIndex = 0;
 
+
 if (heroSlides.length > 1) {
-  setInterval(() => {
-    heroSlides[heroSlideIndex]?.classList.remove('is-active');
+  setInterval(
+    () => {
+      heroSlides[
+        heroSlideIndex
+      ]?.classList.remove(
+        'is-active'
+      );
 
-    heroSlideIndex =
-      (heroSlideIndex + 1) % heroSlides.length;
+      heroSlideIndex =
+        (
+          heroSlideIndex + 1
+        ) %
+        heroSlides.length;
 
-    heroSlides[heroSlideIndex]?.classList.add('is-active');
-  }, 5500);
+      heroSlides[
+        heroSlideIndex
+      ]?.classList.add(
+        'is-active'
+      );
+    },
+    5500
+  );
 }
 
 
@@ -70,30 +304,60 @@ if (heroSlides.length > 1) {
 // Reveal on Scroll
 // ======================================================
 
-const revealElements = $$('.reveal');
+const revealElements =
+  $$('.reveal');
 
-if ('IntersectionObserver' in window) {
-  const revealObserver = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.12
+
+if (
+  'IntersectionObserver'
+  in window
+) {
+  const revealObserver =
+    new IntersectionObserver(
+      entries => {
+        entries.forEach(
+          entry => {
+            if (
+              entry.isIntersecting
+            ) {
+              entry.target
+                .classList
+                .add(
+                  'is-visible'
+                );
+
+              revealObserver
+                .unobserve(
+                  entry.target
+                );
+            }
+          }
+        );
+      },
+      {
+        threshold:
+          0.12
+      }
+    );
+
+  revealElements.forEach(
+    element => {
+      revealObserver.observe(
+        element
+      );
     }
   );
 
-  revealElements.forEach(element => {
-    revealObserver.observe(element);
-  });
 } else {
-  revealElements.forEach(element => {
-    element.classList.add('is-visible');
-  });
+  revealElements.forEach(
+    element => {
+      element
+        .classList
+        .add(
+          'is-visible'
+        );
+    }
+  );
 }
 
 
@@ -101,69 +365,132 @@ if ('IntersectionObserver' in window) {
 // Gallery Filtering
 // ======================================================
 
-const filterBtns = $$('.filter-btn');
-const galleryItems = $$('.gallery-item');
+const filterBtns =
+  $$('.filter-btn');
 
-filterBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    filterBtns.forEach(item => {
-      item.classList.remove('is-active');
-    });
+const galleryItems =
+  $$('.gallery-item');
 
-    btn.classList.add('is-active');
 
-    const filter = btn.dataset.filter || 'all';
+filterBtns.forEach(
+  btn => {
+    btn.addEventListener(
+      'click',
+      () => {
+        filterBtns.forEach(
+          item => {
+            item.classList
+              .remove(
+                'is-active'
+              );
+          }
+        );
 
-    let visible = 0;
+        btn.classList.add(
+          'is-active'
+        );
 
-    galleryItems.forEach(item => {
-      const show =
-        filter === 'all' ||
-        item.dataset.category === filter;
+        const filter =
+          btn.dataset.filter ||
+          'all';
 
-      item.classList.toggle('is-hidden', !show);
+        let visible = 0;
 
-      if (show) {
-        visible++;
+        galleryItems.forEach(
+          item => {
+            const show =
+              filter === 'all' ||
+              item.dataset.category ===
+                filter;
+
+            item.classList
+              .toggle(
+                'is-hidden',
+                !show
+              );
+
+            if (show) {
+              visible++;
+            }
+          }
+        );
+
+        const emptyGallery =
+          $('#emptyGallery');
+
+        if (emptyGallery) {
+          emptyGallery.hidden =
+            visible !== 0;
+        }
+
+        trackEvent(
+          'gallery_filter',
+          '',
+          {
+            filter
+          }
+        );
       }
-    });
-
-    const emptyGallery = $('#emptyGallery');
-
-    if (emptyGallery) {
-      emptyGallery.hidden = visible !== 0;
-    }
-  });
-});
+    );
+  }
+);
 
 
 // ======================================================
 // Language
 // ======================================================
 
-const langToggle = $('#langToggle');
+const langToggle =
+  $('#langToggle');
+
 
 function setLanguage(lang) {
   currentLang = lang;
 
-  document.documentElement.lang = lang;
-  document.documentElement.dir =
-    lang === 'ar' ? 'rtl' : 'ltr';
+  document
+    .documentElement
+    .lang =
+      lang;
 
-  $$('[data-ar][data-en]').forEach(el => {
-    const value = el.dataset[lang];
-
-    if (value !== undefined) {
-      el.textContent = value;
-    }
-  });
-
-  $$('[data-ph-ar][data-ph-en]').forEach(el => {
-    el.placeholder =
+  document
+    .documentElement
+    .dir =
       lang === 'ar'
-        ? el.dataset.phAr || ''
-        : el.dataset.phEn || '';
-  });
+        ? 'rtl'
+        : 'ltr';
+
+  $$(
+    '[data-ar][data-en]'
+  ).forEach(
+    el => {
+      const value =
+        el.dataset[lang];
+
+      if (
+        value !== undefined
+      ) {
+        el.textContent =
+          value;
+      }
+    }
+  );
+
+  $$(
+    '[data-ph-ar][data-ph-en]'
+  ).forEach(
+    el => {
+      el.placeholder =
+        lang === 'ar'
+          ? (
+              el.dataset.phAr ||
+              ''
+            )
+          : (
+              el.dataset.phEn ||
+              ''
+            );
+    }
+  );
 
   if (langToggle) {
     langToggle.textContent =
@@ -173,13 +500,30 @@ function setLanguage(lang) {
   }
 }
 
-langToggle?.addEventListener('click', () => {
-  setLanguage(
-    currentLang === 'ar'
-      ? 'en'
-      : 'ar'
-  );
-});
+
+langToggle?.addEventListener(
+  'click',
+  () => {
+    const newLang =
+      currentLang === 'ar'
+        ? 'en'
+        : 'ar';
+
+    setLanguage(
+      newLang
+    );
+
+    trackEvent(
+      'language_change',
+      '',
+      {
+        language:
+          newLang
+      }
+    );
+  }
+);
+
 
 setLanguage('ar');
 
@@ -188,11 +532,15 @@ setLanguage('ar');
 // Project Wizard
 // ======================================================
 
-const dialog = $('#projectDialog');
-const progressBar = $('#progressBar');
+const dialog =
+  $('#projectDialog');
+
+const progressBar =
+  $('#progressBar');
 
 let historyStack = [];
 let isSubmitting = false;
+
 
 const flowOrder = [
   'intro',
@@ -207,6 +555,7 @@ const flowOrder = [
   'contact',
   'success'
 ];
+
 
 const formData = {
   projectType: '',
@@ -227,27 +576,46 @@ const formData = {
 };
 
 
-function showStep(step, pushHistory = true) {
+// ======================================================
+// Wizard Navigation
+// ======================================================
+
+function showStep(
+  step,
+  pushHistory = true
+) {
   if (!dialog) {
     return;
   }
 
   const current =
-    $('.wizard-step.active', dialog);
+    $(
+      '.wizard-step.active',
+      dialog
+    );
 
   if (
     pushHistory &&
     current &&
-    current.dataset.step !== step
+    current.dataset.step !==
+      step
   ) {
     historyStack.push(
       current.dataset.step
     );
   }
 
-  $$('.wizard-step', dialog).forEach(item => {
-    item.classList.remove('active');
-  });
+  $$(
+    '.wizard-step',
+    dialog
+  ).forEach(
+    item => {
+      item.classList
+        .remove(
+          'active'
+        );
+    }
+  );
 
   const target =
     $(
@@ -256,34 +624,70 @@ function showStep(step, pushHistory = true) {
     );
 
   if (target) {
-    target.classList.add('active');
+    target.classList.add(
+      'active'
+    );
   }
 
   const index =
     Math.max(
       0,
-      flowOrder.indexOf(step)
+      flowOrder.indexOf(
+        step
+      )
     );
 
   if (progressBar) {
     const percentage =
       Math.max(
         7,
-        (index / (flowOrder.length - 1)) * 100
+        (
+          index /
+          (
+            flowOrder.length -
+            1
+          )
+        ) * 100
       );
 
     progressBar.style.width =
       `${percentage}%`;
   }
 
-  $('.dialog-shell', dialog)?.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
+  $('.dialog-shell', dialog)
+    ?.scrollTo(
+      {
+        top: 0,
+        behavior:
+          'smooth'
+      }
+    );
+
+  trackEvent(
+    'wizard_step',
+    step,
+    {
+      step_index:
+        index,
+
+      progress:
+        Math.round(
+          (
+            index /
+            (
+              flowOrder.length -
+              1
+            )
+          ) * 100
+        )
+    }
+  );
 }
 
 
-function openWizard(service = '') {
+function openWizard(
+  service = ''
+) {
   if (!dialog) {
     return;
   }
@@ -291,8 +695,18 @@ function openWizard(service = '') {
   historyStack = [];
 
   if (service) {
-    formData.service = service;
+    formData.service =
+      service;
   }
+
+  trackEvent(
+    'wizard_open',
+    'intro',
+    {
+      preselected_service:
+        service || ''
+    }
+  );
 
   showStep(
     'intro',
@@ -311,6 +725,17 @@ function closeWizard() {
     return;
   }
 
+  const currentStep =
+    $(
+      '.wizard-step.active',
+      dialog
+    )?.dataset.step || '';
+
+  trackEvent(
+    'wizard_close',
+    currentStep
+  );
+
   dialog.close();
 
   document.body.style.overflow =
@@ -318,164 +743,259 @@ function closeWizard() {
 }
 
 
-$$('.js-start').forEach(btn => {
-  btn.addEventListener('click', () => {
-    openWizard(
-      btn.dataset.service || ''
+$$('.js-start').forEach(
+  btn => {
+    btn.addEventListener(
+      'click',
+      () => {
+        openWizard(
+          btn.dataset.service ||
+          ''
+        );
+      }
     );
-  });
-});
-
-
-$('#dialogClose')?.addEventListener(
-  'click',
-  closeWizard
+  }
 );
+
+
+$('#dialogClose')
+  ?.addEventListener(
+    'click',
+    closeWizard
+  );
 
 
 dialog?.addEventListener(
   'cancel',
   event => {
     event.preventDefault();
+
     closeWizard();
   }
 );
 
 
-$$('.wizard-next').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const next =
-      btn.dataset.next;
+$$('.wizard-next').forEach(
+  btn => {
+    btn.addEventListener(
+      'click',
+      () => {
+        const next =
+          btn.dataset.next;
 
-    if (next) {
-      showStep(next);
-    }
-  });
-});
-
-
-$$('.wizard-back').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const previous =
-      historyStack.pop();
-
-    if (previous) {
-      showStep(
-        previous,
-        false
-      );
-    }
-  });
-});
+        if (next) {
+          showStep(next);
+        }
+      }
+    );
+  }
+);
 
 
-$$('.choice').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const field =
-      btn.dataset.field;
+$$('.wizard-back').forEach(
+  btn => {
+    btn.addEventListener(
+      'click',
+      () => {
+        const previous =
+          historyStack.pop();
 
-    const value =
-      btn.dataset.value;
+        if (previous) {
+          showStep(
+            previous,
+            false
+          );
+        }
+      }
+    );
+  }
+);
 
-    if (field) {
-      formData[field] =
-        value || '';
-    }
 
-    const next =
-      btn.dataset.next;
+$$('.choice').forEach(
+  btn => {
+    btn.addEventListener(
+      'click',
+      () => {
+        const field =
+          btn.dataset.field;
 
-    if (next) {
-      showStep(next);
-    }
-  });
-});
+        const value =
+          btn.dataset.value;
+
+        if (field) {
+          formData[field] =
+            value || '';
+        }
+
+        trackEvent(
+          'choice_selected',
+          field || '',
+          {
+            field:
+              field || '',
+
+            value:
+              value || ''
+          }
+        );
+
+        const next =
+          btn.dataset.next;
+
+        if (next) {
+          showStep(next);
+        }
+      }
+    );
+  }
+);
 
 
 // ======================================================
 // Location
 // ======================================================
 
-$('#locationNext')?.addEventListener(
-  'click',
-  () => {
-    formData.region =
-      $('#regionSelect')?.value || '';
+$('#locationNext')
+  ?.addEventListener(
+    'click',
+    () => {
+      formData.region =
+        $('#regionSelect')
+          ?.value ||
+        '';
 
-    formData.city =
-      $('#cityInput')?.value.trim() || '';
+      formData.city =
+        $('#cityInput')
+          ?.value.trim() ||
+        '';
 
-    if (
-      !formData.region ||
-      !formData.city
-    ) {
-      alert(
-        currentLang === 'ar'
-          ? 'حدد المنطقة والمدينة أول.'
-          : 'Please choose the region and enter the city.'
+      if (
+        !formData.region ||
+        !formData.city
+      ) {
+        alert(
+          currentLang === 'ar'
+            ? 'حدد المنطقة والمدينة أول.'
+            : 'Please choose the region and enter the city.'
+        );
+
+        return;
+      }
+
+      trackEvent(
+        'location_completed',
+        'location',
+        {
+          region:
+            formData.region,
+
+          city:
+            formData.city
+        }
       );
 
-      return;
+      showStep(
+        'scope'
+      );
     }
-
-    showStep('scope');
-  }
-);
+  );
 
 
 // ======================================================
 // Rooms
 // ======================================================
 
-$('#roomsNext')?.addEventListener(
-  'click',
-  () => {
-    formData.rooms =
-      $$('#roomChecks input:checked')
-        .map(input => input.value);
+$('#roomsNext')
+  ?.addEventListener(
+    'click',
+    () => {
+      formData.rooms =
+        $$(
+          '#roomChecks input:checked'
+        )
+          .map(
+            input =>
+              input.value
+          );
 
-    if (!formData.rooms.length) {
-      alert(
-        currentLang === 'ar'
-          ? 'اختَر مساحة واحدة على الأقل.'
-          : 'Choose at least one space.'
+      if (
+        !formData.rooms.length
+      ) {
+        alert(
+          currentLang === 'ar'
+            ? 'اختَر مساحة واحدة على الأقل.'
+            : 'Choose at least one space.'
+        );
+
+        return;
+      }
+
+      trackEvent(
+        'rooms_completed',
+        'rooms',
+        {
+          rooms:
+            formData.rooms
+        }
       );
 
-      return;
+      showStep(
+        'details'
+      );
     }
-
-    showStep('details');
-  }
-);
+  );
 
 
 // ======================================================
 // Details
 // ======================================================
 
-$('#detailsNext')?.addEventListener(
-  'click',
-  () => {
-    formData.area =
-      $('#areaInput')?.value.trim() || '';
+$('#detailsNext')
+  ?.addEventListener(
+    'click',
+    () => {
+      formData.area =
+        $('#areaInput')
+          ?.value.trim() ||
+        '';
 
-    formData.plan =
-      $('input[name="plan"]:checked')
-        ?.value || '';
+      formData.plan =
+        $(
+          'input[name="plan"]:checked'
+        )
+          ?.value ||
+        '';
 
-    if (!formData.area) {
-      alert(
-        currentLang === 'ar'
-          ? 'اكتب المساحة التقريبية.'
-          : 'Enter the approximate area.'
+      if (
+        !formData.area
+      ) {
+        alert(
+          currentLang === 'ar'
+            ? 'اكتب المساحة التقريبية.'
+            : 'Enter the approximate area.'
+        );
+
+        return;
+      }
+
+      trackEvent(
+        'details_completed',
+        'details',
+        {
+          area:
+            formData.area,
+
+          plan:
+            formData.plan
+        }
       );
 
-      return;
+      showStep(
+        'budget'
+      );
     }
-
-    showStep('budget');
-  }
-);
+  );
 
 
 // ======================================================
@@ -485,13 +1005,15 @@ $('#detailsNext')?.addEventListener(
 function createIdempotencyKey() {
   if (
     window.crypto &&
-    typeof crypto.randomUUID === 'function'
+    typeof crypto.randomUUID ===
+      'function'
   ) {
     return crypto.randomUUID();
   }
 
   return (
-    Date.now().toString(36) +
+    Date.now()
+      .toString(36) +
     '-' +
     Math.random()
       .toString(36)
@@ -505,7 +1027,9 @@ function createIdempotencyKey() {
 // ======================================================
 
 async function saveLeadToDatabase() {
-  if (!formData.idempotencyKey) {
+  if (
+    !formData.idempotencyKey
+  ) {
     formData.idempotencyKey =
       createIdempotencyKey();
   }
@@ -536,27 +1060,40 @@ async function saveLeadToDatabase() {
 
   const payload = {
     name:
-      formData.name || '',
+      formData.name ||
+      '',
 
     mobile:
-      formData.phone || '',
+      formData.phone ||
+      '',
 
     project_type:
-      formData.projectType || '',
+      formData.projectType ||
+      '',
 
     service:
-      formData.service || '',
+      formData.service ||
+      '',
 
     spaces:
-      Array.isArray(formData.rooms)
-        ? formData.rooms.join(', ')
-        : formData.rooms || '',
+      Array.isArray(
+        formData.rooms
+      )
+        ? formData.rooms.join(
+            ', '
+          )
+        : (
+            formData.rooms ||
+            ''
+          ),
 
     region:
-      formData.region || '',
+      formData.region ||
+      '',
 
     budget:
-      formData.budget || '',
+      formData.budget ||
+      '',
 
     notes,
 
@@ -577,7 +1114,8 @@ async function saveLeadToDatabase() {
     await fetch(
       LEADS_API_URL,
       {
-        method: 'POST',
+        method:
+          'POST',
 
         headers: {
           'Content-Type':
@@ -585,7 +1123,9 @@ async function saveLeadToDatabase() {
         },
 
         body:
-          JSON.stringify(payload)
+          JSON.stringify(
+            payload
+          )
       }
     );
 
@@ -594,6 +1134,7 @@ async function saveLeadToDatabase() {
   try {
     result =
       await response.json();
+
   } catch (error) {
     throw new Error(
       `Invalid API response (${response.status})`
@@ -618,100 +1159,171 @@ async function saveLeadToDatabase() {
 // Submit Project
 // ======================================================
 
-$('#submitProject')?.addEventListener(
-  'click',
-  async () => {
-    if (isSubmitting) {
-      return;
-    }
-
-    formData.name =
-      $('#nameInput')
-        ?.value.trim() || '';
-
-    formData.phone =
-      $('#phoneInput')
-        ?.value.trim() || '';
-
-    formData.email =
-      $('#emailInput')
-        ?.value.trim() || '';
-
-    formData.whatsappPreferred =
-      $('#whatsappPref')
-        ?.checked ?? true;
-
-    if (
-      !formData.name ||
-      !formData.phone
-    ) {
-      alert(
-        currentLang === 'ar'
-          ? 'اكتب الاسم ورقم التواصل.'
-          : 'Enter your name and phone number.'
-      );
-
-      return;
-    }
-
-    const submitButton =
-      $('#submitProject');
-
-    const originalText =
-      submitButton
-        ?.textContent || '';
-
-    isSubmitting = true;
-
-    if (submitButton) {
-      submitButton.disabled = true;
-
-      submitButton.textContent =
-        currentLang === 'ar'
-          ? 'جاري إرسال الطلب...'
-          : 'Sending...';
-    }
-
-    try {
-      await saveLeadToDatabase();
-
-      const summaryBox =
-        $('#summaryBox');
-
-      if (summaryBox) {
-        summaryBox.value =
-          buildSummary();
+$('#submitProject')
+  ?.addEventListener(
+    'click',
+    async () => {
+      if (
+        isSubmitting
+      ) {
+        return;
       }
 
-      showStep('success');
+      formData.name =
+        $('#nameInput')
+          ?.value.trim() ||
+        '';
 
-    } catch (error) {
-      console.error(
-        'Lead save failed:',
-        error
-      );
+      formData.phone =
+        $('#phoneInput')
+          ?.value.trim() ||
+        '';
 
-      alert(
-        currentLang === 'ar'
-          ? 'تعذر حفظ طلبك حاليًا. لم يتم تسجيل الطلب، حاول مرة أخرى.'
-          : 'We could not save your request. Please try again.'
-      );
+      formData.email =
+        $('#emailInput')
+          ?.value.trim() ||
+        '';
 
-      return;
+      formData.whatsappPreferred =
+        $('#whatsappPref')
+          ?.checked ??
+        true;
 
-    } finally {
-      isSubmitting = false;
+      if (
+        !formData.name ||
+        !formData.phone
+      ) {
+        alert(
+          currentLang === 'ar'
+            ? 'اكتب الاسم ورقم التواصل.'
+            : 'Enter your name and phone number.'
+        );
 
-      if (submitButton) {
+        return;
+      }
+
+      const submitButton =
+        $('#submitProject');
+
+      const originalText =
+        submitButton
+          ?.textContent ||
+        '';
+
+      isSubmitting =
+        true;
+
+      if (
+        submitButton
+      ) {
         submitButton.disabled =
-          false;
+          true;
 
         submitButton.textContent =
-          originalText;
+          currentLang === 'ar'
+            ? 'جاري إرسال الطلب...'
+            : 'Sending...';
+      }
+
+      trackEvent(
+        'lead_submit_attempt',
+        'contact',
+        {
+          project_type:
+            formData.projectType,
+
+          service:
+            formData.service,
+
+          region:
+            formData.region,
+
+          budget:
+            formData.budget
+        }
+      );
+
+      try {
+        const result =
+          await saveLeadToDatabase();
+
+        trackEvent(
+          'lead_submitted',
+          'success',
+          {
+            lead_id:
+              result?.id ||
+              '',
+
+            project_type:
+              formData.projectType,
+
+            service:
+              formData.service,
+
+            region:
+              formData.region,
+
+            city:
+              formData.city,
+
+            budget:
+              formData.budget
+          }
+        );
+
+        const summaryBox =
+          $('#summaryBox');
+
+        if (summaryBox) {
+          summaryBox.value =
+            buildSummary();
+        }
+
+        showStep(
+          'success'
+        );
+
+      } catch (error) {
+        console.error(
+          'Lead save failed:',
+          error
+        );
+
+        trackEvent(
+          'lead_submit_failed',
+          'contact',
+          {
+            error:
+              error?.message ||
+              'unknown'
+          }
+        );
+
+        alert(
+          currentLang === 'ar'
+            ? 'تعذر حفظ طلبك حاليًا. لم يتم تسجيل الطلب، حاول مرة أخرى.'
+            : 'We could not save your request. Please try again.'
+        );
+
+        return;
+
+      } finally {
+        isSubmitting =
+          false;
+
+        if (
+          submitButton
+        ) {
+          submitButton.disabled =
+            false;
+
+          submitButton.textContent =
+            originalText;
+        }
       }
     }
-  }
-);
+  );
 
 
 // ======================================================
@@ -751,53 +1363,71 @@ function buildSummary() {
 // WhatsApp
 // ======================================================
 
-$('#whatsappSend')?.addEventListener(
-  'click',
-  () => {
-    const message =
-      encodeURIComponent(
-        buildSummary()
+$('#whatsappSend')
+  ?.addEventListener(
+    'click',
+    () => {
+      trackEvent(
+        'whatsapp_click',
+        'success',
+        {
+          lead_name:
+            formData.name ||
+            ''
+        }
       );
 
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`,
-      '_blank',
-      'noopener'
-    );
-  }
-);
+      const message =
+        encodeURIComponent(
+          buildSummary()
+        );
+
+      window.open(
+        `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`,
+        '_blank',
+        'noopener'
+      );
+    }
+  );
 
 
 // ======================================================
 // Copy Summary
 // ======================================================
 
-$('#copySummary')?.addEventListener(
-  'click',
-  async () => {
-    try {
-      await navigator.clipboard
-        .writeText(
-          buildSummary()
+$('#copySummary')
+  ?.addEventListener(
+    'click',
+    async () => {
+      try {
+        await navigator
+          .clipboard
+          .writeText(
+            buildSummary()
+          );
+
+        trackEvent(
+          'summary_copied',
+          'success'
         );
 
-      alert(
-        currentLang === 'ar'
-          ? 'تم نسخ الملخص.'
-          : 'Summary copied.'
-      );
+        alert(
+          currentLang === 'ar'
+            ? 'تم نسخ الملخص.'
+            : 'Summary copied.'
+        );
 
-    } catch (error) {
-      console.error(
-        'Copy failed:',
-        error
-      );
+      } catch (error) {
+        console.error(
+          'Copy failed:',
+          error
+        );
 
-      alert(
-        currentLang === 'ar'
-          ? 'تعذر نسخ الملخص.'
-          : 'Could not copy the summary.'
-      );
+        alert(
+          currentLang === 'ar'
+            ? 'تعذر نسخ الملخص.'
+            : 'Could not copy the summary.'
+        );
+      }
     }
-  }
-);
+  );
