@@ -42,6 +42,17 @@ function normalizeWhatsAppNumber(mobile = "") {
   return number;
 }
 
+function isOriginAllowed(origin) {
+  return !origin || ALLOWED_ORIGINS.has(origin);
+}
+
+function jsonResponse(data, status, origin) {
+  return Response.json(data, {
+    status,
+    headers: corsHeaders(origin)
+  });
+}
+
 async function sendLeadEmail(env, lead) {
   if (!env.RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY is missing");
@@ -188,24 +199,276 @@ async function sendLeadEmail(env, lead) {
   return result;
 }
 
+async function handleLead(request, env, origin) {
+  if (
+    origin &&
+    !ALLOWED_ORIGINS.has(origin)
+  ) {
+    return jsonResponse(
+      {
+        success: false,
+        error: "Origin not allowed"
+      },
+      403,
+      origin
+    );
+  }
+
+  try {
+    const data = await request.json();
+
+    if (!data.name || !data.mobile) {
+      return jsonResponse(
+        {
+          success: false,
+          error: "Name and mobile are required"
+        },
+        400,
+        origin
+      );
+    }
+
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+
+    const idempotencyKey =
+      data.idempotency_key ||
+      crypto.randomUUID();
+
+    const lead = {
+      id,
+      created_at: createdAt,
+
+      name:
+        data.name || "",
+
+      mobile:
+        data.mobile || "",
+
+      project_type:
+        data.project_type || "",
+
+      service:
+        data.service || "",
+
+      spaces:
+        data.spaces || "",
+
+      region:
+        data.region || "",
+
+      budget:
+        data.budget || "",
+
+      notes:
+        data.notes || "",
+
+      language:
+        data.language || "ar",
+
+      lead_source:
+        data.lead_source || "website",
+
+      status:
+        data.status || "new",
+
+      idempotency_key:
+        idempotencyKey
+    };
+
+    await env.DB.prepare(`
+      INSERT INTO leads (
+        id,
+        created_at,
+        name,
+        mobile,
+        project_type,
+        service,
+        spaces,
+        region,
+        budget,
+        notes,
+        language,
+        lead_source,
+        status,
+        idempotency_key
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+      .bind(
+        lead.id,
+        lead.created_at,
+        lead.name,
+        lead.mobile,
+        lead.project_type,
+        lead.service,
+        lead.spaces,
+        lead.region,
+        lead.budget,
+        lead.notes,
+        lead.language,
+        lead.lead_source,
+        lead.status,
+        lead.idempotency_key
+      )
+      .run();
+
+    let emailSent = false;
+
+    try {
+      await sendLeadEmail(env, lead);
+      emailSent = true;
+    } catch (emailError) {
+      console.error(
+        "Lead email error:",
+        emailError
+      );
+    }
+
+    return jsonResponse(
+      {
+        success: true,
+        id,
+        email_sent: emailSent
+      },
+      201,
+      origin
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Lead save error:",
+      error
+    );
+
+    return jsonResponse(
+      {
+        success: false,
+        error:
+          error.message ||
+          "Unknown server error"
+      },
+      500,
+      origin
+    );
+  }
+}
+
+async function handleAnalytics(request, env, origin) {
+  if (
+    origin &&
+    !ALLOWED_ORIGINS.has(origin)
+  ) {
+    return jsonResponse(
+      {
+        success: false,
+        error: "Origin not allowed"
+      },
+      403,
+      origin
+    );
+  }
+
+  try {
+    const data = await request.json();
+
+    if (!data.session_id || !data.event_name) {
+      return jsonResponse(
+        {
+          success: false,
+          error:
+            "session_id and event_name are required"
+        },
+        400,
+        origin
+      );
+    }
+
+    const id = crypto.randomUUID();
+    const createdAt =
+      new Date().toISOString();
+
+    let metadata = "";
+
+    if (data.metadata !== undefined) {
+      metadata =
+        typeof data.metadata === "string"
+          ? data.metadata
+          : JSON.stringify(data.metadata);
+    }
+
+    await env.DB.prepare(`
+      INSERT INTO analytics_events (
+        id,
+        session_id,
+        event_name,
+        step,
+        page,
+        metadata,
+        created_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `)
+      .bind(
+        id,
+        String(data.session_id),
+        String(data.event_name),
+        data.step
+          ? String(data.step)
+          : "",
+        data.page
+          ? String(data.page)
+          : "home",
+        metadata,
+        createdAt
+      )
+      .run();
+
+    return jsonResponse(
+      {
+        success: true,
+        id
+      },
+      201,
+      origin
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Analytics save error:",
+      error
+    );
+
+    return jsonResponse(
+      {
+        success: false,
+        error:
+          error.message ||
+          "Unknown server error"
+      },
+      500,
+      origin
+    );
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const origin = request.headers.get("Origin") || "";
+
+    const origin =
+      request.headers.get("Origin") || "";
 
     // ==================================================
-    // API endpoint
+    // Leads API
     // ==================================================
 
     if (url.pathname === "/api/leads") {
 
-      // ------------------------------------------------
-      // CORS preflight
-      // ------------------------------------------------
-
       if (request.method === "OPTIONS") {
-
-        if (!ALLOWED_ORIGINS.has(origin)) {
+        if (!isOriginAllowed(origin)) {
           return new Response(null, {
             status: 403
           });
@@ -217,194 +480,48 @@ export default {
         });
       }
 
-      // ------------------------------------------------
-      // Save new lead
-      // ------------------------------------------------
+      if (request.method === "POST") {
+        return handleLead(
+          request,
+          env,
+          origin
+        );
+      }
+
+      return new Response(
+        "Method Not Allowed",
+        {
+          status: 405,
+          headers: corsHeaders(origin)
+        }
+      );
+    }
+
+    // ==================================================
+    // Analytics API
+    // ==================================================
+
+    if (url.pathname === "/api/analytics") {
+
+      if (request.method === "OPTIONS") {
+        if (!isOriginAllowed(origin)) {
+          return new Response(null, {
+            status: 403
+          });
+        }
+
+        return new Response(null, {
+          status: 204,
+          headers: corsHeaders(origin)
+        });
+      }
 
       if (request.method === "POST") {
-
-        // Allow direct requests with no Origin,
-        // but reject unknown browser origins.
-
-        if (
-          origin &&
-          !ALLOWED_ORIGINS.has(origin)
-        ) {
-          return Response.json(
-            {
-              success: false,
-              error: "Origin not allowed"
-            },
-            {
-              status: 403,
-              headers: corsHeaders(origin)
-            }
-          );
-        }
-
-        try {
-          const data = await request.json();
-
-          // --------------------------------------------
-          // Required fields
-          // --------------------------------------------
-
-          if (!data.name || !data.mobile) {
-            return Response.json(
-              {
-                success: false,
-                error: "Name and mobile are required"
-              },
-              {
-                status: 400,
-                headers: corsHeaders(origin)
-              }
-            );
-          }
-
-          const id = crypto.randomUUID();
-          const createdAt = new Date().toISOString();
-
-          const idempotencyKey =
-            data.idempotency_key ||
-            crypto.randomUUID();
-
-          const lead = {
-            id,
-            created_at: createdAt,
-
-            name:
-              data.name || "",
-
-            mobile:
-              data.mobile || "",
-
-            project_type:
-              data.project_type || "",
-
-            service:
-              data.service || "",
-
-            spaces:
-              data.spaces || "",
-
-            region:
-              data.region || "",
-
-            budget:
-              data.budget || "",
-
-            notes:
-              data.notes || "",
-
-            language:
-              data.language || "ar",
-
-            lead_source:
-              data.lead_source || "website",
-
-            status:
-              data.status || "new",
-
-            idempotency_key:
-              idempotencyKey
-          };
-
-          // --------------------------------------------
-          // Save lead to D1
-          // --------------------------------------------
-
-          await env.DB.prepare(`
-            INSERT INTO leads (
-              id,
-              created_at,
-              name,
-              mobile,
-              project_type,
-              service,
-              spaces,
-              region,
-              budget,
-              notes,
-              language,
-              lead_source,
-              status,
-              idempotency_key
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `)
-            .bind(
-              lead.id,
-              lead.created_at,
-              lead.name,
-              lead.mobile,
-              lead.project_type,
-              lead.service,
-              lead.spaces,
-              lead.region,
-              lead.budget,
-              lead.notes,
-              lead.language,
-              lead.lead_source,
-              lead.status,
-              lead.idempotency_key
-            )
-            .run();
-
-          // --------------------------------------------
-          // Send immediate email
-          // Failure here must NOT delete or lose lead
-          // --------------------------------------------
-
-          let emailSent = false;
-
-          try {
-            await sendLeadEmail(env, lead);
-            emailSent = true;
-
-          } catch (emailError) {
-            console.error(
-              "Lead email error:",
-              emailError
-            );
-          }
-
-          // --------------------------------------------
-          // Success response
-          // --------------------------------------------
-
-          return Response.json(
-            {
-              success: true,
-              id,
-              email_sent: emailSent
-            },
-            {
-              status: 201,
-              headers: corsHeaders(origin)
-            }
-          );
-
-        } catch (error) {
-
-          console.error(
-            "Lead save error:",
-            error
-          );
-
-          return Response.json(
-            {
-              success: false,
-              error:
-                error.message ||
-                "Unknown server error"
-            },
-            {
-              status: 500,
-              headers: corsHeaders(origin)
-            }
-          );
-        }
+        return handleAnalytics(
+          request,
+          env,
+          origin
+        );
       }
 
       return new Response(
