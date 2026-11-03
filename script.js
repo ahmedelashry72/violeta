@@ -6,6 +6,10 @@ const LEADS_API_URL =
 const ANALYTICS_API_URL =
   'https://violeta.violeta-interiors.workers.dev/api/analytics';
 
+// Preview sites must not write customer leads or analytics to production.
+const IS_PREVIEW = !['violetaksa.com', 'www.violetaksa.com']
+  .includes(window.location.hostname.toLowerCase());
+
 let currentLang = 'ar';
 
 const $ = (s, scope = document) =>
@@ -99,6 +103,7 @@ function trackEvent(
   step = '',
   metadata = {}
 ) {
+  if (IS_PREVIEW) return;
   const payload = {
     session_id:
       analyticsSessionId,
@@ -1244,6 +1249,13 @@ $('#submitProject')
       );
 
       try {
+        if (IS_PREVIEW) {
+          const summaryBox = $('#summaryBox');
+          if (summaryBox) summaryBox.value = buildSummary();
+          showStep('success');
+          return;
+        }
+
         const result =
           await saveLeadToDatabase();
 
@@ -1389,6 +1401,48 @@ $('#whatsappSend')
       );
     }
   );
+
+
+// ======================================================
+// Test-only UX in deploy previews; production remains unchanged
+// ======================================================
+
+if (IS_PREVIEW && dialog) {
+  const previewText = (el, ar, en) => {
+    if (!el) return;
+    el.dataset.ar = ar;
+    el.dataset.en = en;
+    el.textContent = currentLang === 'ar' ? ar : en;
+  };
+
+  const contact = $('.wizard-step[data-step="contact"]', dialog);
+  if (contact) {
+    const notice = document.createElement('p');
+    notice.setAttribute('role', 'status');
+    notice.style.cssText = 'background:#F5F1E8;color:#103F3C;padding:12px 16px;border:1px solid #C6A15B;border-radius:10px;font-weight:700;';
+    previewText(notice,
+      'معاينة تجريبية: لن يتم حفظ بياناتك أو إرسال طلب فعلي.',
+      'Test preview: no details will be saved or sent.');
+    const heading = contact.querySelector('h2');
+    if (heading) heading.insertAdjacentElement('afterend', notice);
+    else contact.prepend(notice);
+  }
+  previewText($('#submitProject'),
+    'اختبار النموذج بدون إرسال',
+    'Test form without sending');
+  previewText($('.success-step h2', dialog),
+    'تم اختبار النموذج بنجاح',
+    'Form test completed successfully');
+  previewText($('.success-step p', dialog),
+    'هذه معاينة فقط. لم يتم حفظ الطلب أو إرساله إلى فيوليتا.',
+    'This was a preview only. No request was saved or sent.');
+  const whatsappSend = $('#whatsappSend');
+  if (whatsappSend) {
+    whatsappSend.disabled = true;
+    whatsappSend.hidden = true;
+    whatsappSend.style.display = 'none';
+  }
+}
 
 
 // ======================================================
