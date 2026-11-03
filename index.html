@@ -4,9 +4,10 @@
 <head><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-H8D81FKVLE"></script><script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-H8D81FKVLE');
+  if (['violetaksa.com', 'www.violetaksa.com'].includes(window.location.hostname.toLowerCase())) {
+    gtag('js', new Date());
+    gtag('config', 'G-H8D81FKVLE');
+  }
 </script><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="#103F3C" name="theme-color"/>
