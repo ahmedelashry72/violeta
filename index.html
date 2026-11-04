@@ -563,6 +563,11 @@ specimens.forEach((url,modelIndex)=>{
    const normalized=new THREE.Group();normalized.scale.setScalar(1/sphere.radius);normalized.add(model);
    b.root.remove(b.bird);b.root.add(normalized);
    b.bird=normalized;b.wings=[];
+   if(gltf.animations.length){
+    const mixer=new THREE.AnimationMixer(model);
+    gltf.animations.forEach(clip=>mixer.clipAction(clip).play());
+    b.mixer=mixer;
+   }
   });
  },undefined,()=>{});
 });
@@ -583,7 +588,7 @@ function draw(now){
   flock.position.set((-edge+2*edge*p)*(reverse?-1:1),worldH*(mobile.matches?.39:.31)+Math.sin(p*Math.PI*2+angle)*.15,-.2);
   flock.scale.setScalar((mobile.matches?.38:.64)*(1+.045*Math.sin(p*Math.PI)));
   flock.rotation.set(.04,reverse?Math.PI:0,.024*Math.sin(p*Math.PI*2+angle));
-  for(const bird of birds){const beat=now*.001*7.1+bird.phase;
+  for(const bird of birds){if(bird.mixer)bird.mixer.update(dt);const beat=now*.001*7.1+bird.phase;
    for(const v of bird.wings)v.wing.rotation.x=v.side*(.36+Math.sin(beat)*.65);
    bird.bird.rotation.z=.03*Math.sin(beat*.23);}
  }else if(t>duration+gap){begin=now;reverse=!reverse;angle+=1.31;duration=mobile.matches?7.8:10.9;gap=3+Math.sin(angle)*1.2;}
