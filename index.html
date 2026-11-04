@@ -94,63 +94,33 @@
 <style id="vio-cinema-preview-style">
 /* VIOLETA cinematic showcase — isolated preview branch styles. */
 .vio-cinema{position:relative;isolation:isolate;overflow:hidden;min-height:clamp(500px,53vw,700px);display:grid;place-items:center;color:#fff;background:#103f3c;contain:layout paint}
-.vio-cinema__scene,.vio-cinema__photo,.vio-cinema__lighting,.vio-cinema__birds,.vio-cinema__fallback,.vio-cinema__canvas{position:absolute;inset:0;width:100%;height:100%}
+.vio-cinema__scene,.vio-cinema__photo,.vio-cinema__lighting,.vio-cinema__birds{position:absolute;inset:0;width:100%;height:100%}
 .vio-cinema__scene{z-index:-2;overflow:hidden;pointer-events:none}
 .vio-cinema__photo{display:block;object-fit:cover;object-position:center 53%;filter:saturate(.88) contrast(1.06)}
 .vio-cinema__scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,30,28,.6) 0%,rgba(5,30,28,.7) 30%,rgba(5,30,28,.67) 70%,rgba(5,30,28,.57) 100%)}
 .vio-cinema__lighting{z-index:0;pointer-events:none;opacity:.6;background:radial-gradient(ellipse 18% 34% at 84% 25%,rgba(249,198,116,.34),transparent 85%),radial-gradient(ellipse 20% 35% at 18% 73%,rgba(238,196,113,.2),transparent 86%);animation:vio-cinema-glow 9s ease-in-out infinite alternate}
 @keyframes vio-cinema-glow{from{opacity:.35}to{opacity:.77}}
-.vio-cinema__birds{z-index:1;pointer-events:none;overflow:hidden}
-.vio-cinema__canvas{display:block;pointer-events:none;opacity:0;transition:opacity .65s ease}
-.vio-cinema.is-3d .vio-cinema__canvas{opacity:1}
-.vio-cinema__fallback{pointer-events:none;transition:opacity .3s ease}
-.vio-cinema.is-3d .vio-cinema__fallback{opacity:0;visibility:hidden}
-.vio-cinema__bird{position:absolute;display:block;aspect-ratio:10/7;color:#dec184;opacity:0;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(20,11,0,.25));will-change:transform,opacity;animation-timing-function:linear;animation-iteration-count:infinite}
-.vio-cinema__bird svg{display:block;width:100%;height:100%;overflow:visible}
-.vio-cinema__bird .wing{transform-box:fill-box;transform-origin:60% 70%;animation:vio-bird-flap 1.12s ease-in-out infinite alternate}
-.vio-cinema__bird .wing--back{transform-origin:25% 72%;animation-delay:-.45s}
-/* Safe flight lanes: two above and two below the central logo/copy. */
-.vio-cinema__bird--a{left:0;top:9%;width:clamp(65px,8vw,125px);animation-name:vio-bird-flight-left-top;animation-duration:12.6s;animation-delay:-3.9s}
-.vio-cinema__bird--b{right:0;top:13%;width:clamp(43px,5.3vw,78px);animation-name:vio-bird-flight-right-top;animation-duration:10.8s;animation-delay:-6.7s}
-.vio-cinema__bird--c{left:0;bottom:11%;width:clamp(44px,5.5vw,83px);animation-name:vio-bird-flight-left-bottom;animation-duration:15.1s;animation-delay:-9.4s}
-.vio-cinema__bird--d{right:0;bottom:16%;width:clamp(35px,4vw,63px);animation-name:vio-bird-flight-right-bottom;animation-duration:11.9s;animation-delay:-1.8s}
-@keyframes vio-bird-flight-left-top{
- 0%{transform:translate3d(-140%,8px,0) rotate(-9deg) scale(.85);opacity:0}
- 8%{opacity:.9}20%{transform:translate3d(7vw,-5px,0) rotate(-2deg) scale(.95)}
- 42%{transform:translate3d(17vw,10px,0) rotate(3deg) scale(1.04)}
- 70%{transform:translate3d(29vw,-9px,0) rotate(-4deg) scale(1)}
- 90%{opacity:.9}100%{transform:translate3d(38vw,-15px,0) rotate(-7deg) scale(.86);opacity:0}
-}
-@keyframes vio-bird-flight-right-top{
- 0%{transform:translate3d(140%,6px,0) scaleX(-1) rotate(-5deg);opacity:0}
- 9%{opacity:.86}26%{transform:translate3d(-9vw,-5px,0) scaleX(-1) rotate(0)}
- 51%{transform:translate3d(-21vw,8px,0) scaleX(-1) rotate(5deg)}
- 78%{transform:translate3d(-30vw,-4px,0) scaleX(-1) rotate(-3deg)}
- 91%{opacity:.86}100%{transform:translate3d(-39vw,-13px,0) scaleX(-1) rotate(-8deg);opacity:0}
-}
-@keyframes vio-bird-flight-left-bottom{
- 0%{transform:translate3d(-150%,15px,0) rotate(2deg) scale(.75);opacity:0}
- 8%{opacity:.85}24%{transform:translate3d(9vw,-8px,0) rotate(-8deg) scale(.9)}
- 50%{transform:translate3d(20vw,8px,0) rotate(4deg) scale(.98)}
- 75%{transform:translate3d(30vw,-11px,0) rotate(-5deg) scale(1)}
- 92%{opacity:.85}100%{transform:translate3d(39vw,4px,0) rotate(3deg) scale(.88);opacity:0}
-}
-@keyframes vio-bird-flight-right-bottom{
- 0%{transform:translate3d(155%,-10px,0) scaleX(-1) rotate(-3deg) scale(.83);opacity:0}
- 10%{opacity:.84}29%{transform:translate3d(-10vw,7px,0) scaleX(-1) rotate(4deg) scale(.92)}
- 59%{transform:translate3d(-24vw,-8px,0) scaleX(-1) rotate(-5deg) scale(1.05)}
- 86%{opacity:.84}100%{transform:translate3d(-38vw,9px,0) scaleX(-1) rotate(6deg) scale(.92);opacity:0}
-}
-@keyframes vio-bird-flap{from{transform:scaleY(.63) rotate(-7deg)}to{transform:scaleY(1.03) rotate(6deg)}}
-body.motion-paused .vio-cinema__bird,body.motion-paused .vio-cinema__bird .wing{animation-play-state:paused!important}
+
+.vio-cinema__birds{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;contain:layout paint}
+.vio-cinema__bird{position:absolute;left:0;top:0;display:none;width:105px;aspect-ratio:190/120;pointer-events:none;transform-origin:center center;will-change:transform;filter:drop-shadow(0 3px 4px rgba(20,18,12,.26));backface-visibility:hidden}
+.vio-cinema__bird.is-flying{display:block}
+.vio-cinema__bird svg{display:block;overflow:visible;width:100%;height:100%}
+.vio-cinema__bird .vio-cinema__wing{transform-box:fill-box;transform-origin:76% 85%;animation:vio-natural-wingbeat var(--wing-time,.8s) cubic-bezier(.4,0,.58,1) infinite alternate}
+.vio-cinema__bird .wing--back{transform-origin:62% 80%;animation-delay:calc(var(--wing-time,.8s) * -.53)}
+.vio-cinema__bird[data-species="dove"] .vio-cinema__wing{--wing-time:1.12s}
+.vio-cinema__bird[data-species="hoopoe"] .vio-cinema__wing{--wing-time:.94s}
+.vio-cinema__bird[data-species="kingfisher"] .vio-cinema__wing{--wing-time:.53s}
+.vio-cinema__bird[data-species="swallow"] .vio-cinema__wing{--wing-time:.71s}
+@keyframes vio-natural-wingbeat{0%{transform:rotate(-15deg) scaleY(.82)}50%{transform:rotate(0deg) scaleY(.94)}100%{transform:rotate(11deg) scaleY(1.09)}}
 .vio-cinema__copy{position:relative;z-index:2;width:min(600px,65%);padding:55px 20px;text-align:center;pointer-events:none}
 .vio-cinema__mark{width:90px;height:90px;object-fit:contain;margin:0 auto 20px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.2))}
 .vio-cinema__eyebrow{display:block;font:600 11px/1.6 'Manrope',sans-serif;letter-spacing:.22em;color:#ecd4a3;direction:ltr;margin-bottom:15px}
 .vio-cinema__copy h2{font-size:clamp(34px,4.1vw,64px);font-weight:500;line-height:1.3;letter-spacing:-.012em;color:#fff;margin:0}
 .vio-cinema__copy p{color:#f1e9dc;font-size:clamp(15px,1.4vw,19px);line-height:1.75;max-width:38ch;margin:16px auto 0}
 html[lang=en] .vio-cinema__copy h2{font-family:'Manrope',sans-serif;font-size:clamp(27px,3.4vw,52px);line-height:1.18;letter-spacing:-.03em}
-@media(max-width:760px){.vio-cinema{min-height:520px}.vio-cinema__scene:after{background:rgba(4,29,26,.7)}.vio-cinema__copy{width:min(100%,390px);padding:80px 34px}.vio-cinema__mark{width:70px;height:70px}.vio-cinema__copy h2{font-size:clamp(30px,8vw,40px)}.vio-cinema__copy p{font-size:15px}.vio-cinema__bird--a{top:7%}.vio-cinema__bird--b{top:10%}.vio-cinema__bird--c{bottom:9%}.vio-cinema__bird--d{bottom:11%}}
-@media(prefers-reduced-motion:reduce){.vio-cinema__lighting,.vio-cinema__bird,.vio-cinema__bird .wing{animation:none!important}.vio-cinema__bird{opacity:.5}.vio-cinema__canvas{display:none!important}}
+
+@media(max-width:760px){.vio-cinema{min-height:520px}.vio-cinema__scene:after{background:rgba(4,29,26,.7)}.vio-cinema__copy{width:min(100%,390px);padding:80px 34px}.vio-cinema__mark{width:70px;height:70px}.vio-cinema__copy h2{font-size:clamp(30px,8vw,40px)}.vio-cinema__copy p{font-size:15px}.vio-cinema__bird{filter:drop-shadow(0 2px 3px rgba(10,10,10,.25))}}
+@media(prefers-reduced-motion:reduce){.vio-cinema__lighting{animation:none!important}.vio-cinema__bird{display:none!important}}
 
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
@@ -306,9 +276,36 @@ html[lang=en] .vio-cinema__copy h2{font-family:'Manrope',sans-serif;font-size:cl
 <section class="vio-cinema" id="violeta-cinematic" aria-label="VIOLETA cinematic interior design">
   <div class="vio-cinema__scene" aria-hidden="true"><img class="vio-cinema__photo" src="assets/images/majlis-05.webp" loading="lazy" alt=""></div>
   <div class="vio-cinema__lighting" aria-hidden="true"></div>
-  <div class="vio-cinema__birds" aria-hidden="true"><canvas class="vio-cinema__canvas"></canvas><div class="vio-cinema__fallback">
-    <span class="vio-cinema__bird vio-cinema__bird--a"><svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cinemaGolda" x1="0" x2="1"><stop stop-color="#8b692f"/><stop offset=".47" stop-color="#e6c687"/><stop offset="1" stop-color="#f3d9a0"/></linearGradient></defs><g fill="url(#cinemaGolda)"><path d="M40 34 Q57 23 69 29 L82 27 72 33 Q67 46 47 42 L23 56 33 39Z"/><path class="wing" d="M48 36 Q24 29 8 6 Q42 10 58 35Z"/><path class="wing wing--back" d="M48 36 Q61 7 90 2 Q78 28 57 40Z"/></g><g stroke="#8b692f" stroke-width=".7" opacity=".65" fill="none"><path d="M19 15L51 35M26 15L51 35M70 18L55 36M77 13L55 36"/></g></svg></span><span class="vio-cinema__bird vio-cinema__bird--b"><svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cinemaGoldb" x1="0" x2="1"><stop stop-color="#8b692f"/><stop offset=".47" stop-color="#e6c687"/><stop offset="1" stop-color="#f3d9a0"/></linearGradient></defs><g fill="url(#cinemaGoldb)"><path d="M40 34 Q57 23 69 29 L82 27 72 33 Q67 46 47 42 L23 56 33 39Z"/><path class="wing" d="M48 36 Q24 29 8 6 Q42 10 58 35Z"/><path class="wing wing--back" d="M48 36 Q61 7 90 2 Q78 28 57 40Z"/></g><g stroke="#8b692f" stroke-width=".7" opacity=".65" fill="none"><path d="M19 15L51 35M26 15L51 35M70 18L55 36M77 13L55 36"/></g></svg></span><span class="vio-cinema__bird vio-cinema__bird--c"><svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cinemaGoldc" x1="0" x2="1"><stop stop-color="#8b692f"/><stop offset=".47" stop-color="#e6c687"/><stop offset="1" stop-color="#f3d9a0"/></linearGradient></defs><g fill="url(#cinemaGoldc)"><path d="M40 34 Q57 23 69 29 L82 27 72 33 Q67 46 47 42 L23 56 33 39Z"/><path class="wing" d="M48 36 Q24 29 8 6 Q42 10 58 35Z"/><path class="wing wing--back" d="M48 36 Q61 7 90 2 Q78 28 57 40Z"/></g><g stroke="#8b692f" stroke-width=".7" opacity=".65" fill="none"><path d="M19 15L51 35M26 15L51 35M70 18L55 36M77 13L55 36"/></g></svg></span><span class="vio-cinema__bird vio-cinema__bird--d"><svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cinemaGoldd" x1="0" x2="1"><stop stop-color="#8b692f"/><stop offset=".47" stop-color="#e6c687"/><stop offset="1" stop-color="#f3d9a0"/></linearGradient></defs><g fill="url(#cinemaGoldd)"><path d="M40 34 Q57 23 69 29 L82 27 72 33 Q67 46 47 42 L23 56 33 39Z"/><path class="wing" d="M48 36 Q24 29 8 6 Q42 10 58 35Z"/><path class="wing wing--back" d="M48 36 Q61 7 90 2 Q78 28 57 40Z"/></g><g stroke="#8b692f" stroke-width=".7" opacity=".65" fill="none"><path d="M19 15L51 35M26 15L51 35M70 18L55 36M77 13L55 36"/></g></svg></span>
-  </div></div>
+  <div class="vio-cinema__birds" aria-hidden="true">
+  <span class="vio-cinema__bird" data-species="kingfisher" aria-hidden="true"><svg viewBox="0 0 190 120" role="presentation" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="vk-body" x1=".2" x2=".85" y1="0" y2="1"><stop stop-color="#04455a"/><stop offset=".42" stop-color="#0c89a9"/><stop offset="1" stop-color="#c8773b"/></linearGradient><linearGradient id="vk-wing" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#123e5c"/><stop offset=".64" stop-color="#10aab7"/><stop offset="1" stop-color="#063e5b"/></linearGradient></defs>
+<path d="M72 63 Q42 63 13 83 L48 79 27 100 78 75" fill="#126e8e" stroke="#084258" stroke-width="1.4"/>
+<g class="vio-cinema__wing wing--back"><path d="M91 59 Q65 28 29 4 Q35 34 55 57 L11 37 Q31 68 81 77Z" fill="url(#vk-wing)" stroke="#063f60" stroke-width="1.4"/><path d="M39 20 Q54 41 80 60 M28 42 Q48 60 77 68 M50 11 Q61 38 83 57" fill="none" stroke="#a4dbe4" stroke-width="1.6" opacity=".7"/></g>
+<path d="M55 62 Q70 44 96 47 Q123 45 133 58 Q140 74 110 81 Q82 90 61 75Z" fill="url(#vk-body)" stroke="#1a4f5b" stroke-width="1.3"/><path d="M80 70 Q109 81 126 67 Q106 92 80 78Z" fill="#da7b3c"/><path d="M97 50 Q112 33 127 39 Q143 45 143 58 Q139 69 122 65 L115 55Z" fill="#0c6b86" stroke="#064458" stroke-width="1.2"/><path d="M126 43 Q139 42 142 52 Q141 62 128 61 L116 53Z" fill="#eb8d40" opacity=".96"/><path d="M139 49 L185 51 141 57Z" fill="#1e272b"/><path d="M136 51 L170 52" stroke="#949c9b" stroke-width=".75"/><circle cx="134" cy="47.5" r="2.5" fill="#101719"/><circle cx="134.7" cy="47" r=".8" fill="#fff"/>
+<g class="vio-cinema__wing wing--front"><path d="M88 61 Q66 28 38 0 Q38 22 55 46 L20 22 Q37 66 80 76Z" fill="url(#vk-wing)" stroke="#084b62" stroke-width="1.3"/><path d="M45 15 Q55 40 79 62 M27 28 Q52 53 81 67 M49 5 Q64 39 83 61" fill="none" stroke="#9ee5e7" stroke-width="1.4" opacity=".65"/></g></svg></span>
+  <span class="vio-cinema__bird" data-species="hoopoe" aria-hidden="true"><svg viewBox="0 0 190 120" role="presentation" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="vh-body" x1=".2" x2=".9" y1="0" y2="1"><stop stop-color="#f1ca8d"/><stop offset=".55" stop-color="#bc7948"/><stop offset="1" stop-color="#815033"/></linearGradient><linearGradient id="vh-wing" x1=".2" x2=".6" y1="0" y2="1"><stop stop-color="#3d3229"/><stop offset=".35" stop-color="#fff0cd"/><stop offset=".7" stop-color="#514135"/><stop offset="1" stop-color="#1d2223"/></linearGradient></defs>
+<path d="M76 66 Q41 64 17 80 L37 83 24 94 Q52 83 75 76Z" fill="#282725"/><path d="M42 75 L64 72 M33 82 L59 78" stroke="#f9e6c2" stroke-width="4"/>
+<g class="vio-cinema__wing wing--back"><path d="M87 65 Q54 30 28 11 Q24 44 54 65 L13 47 Q31 78 87 78Z" fill="url(#vh-wing)" stroke="#201e20" stroke-width="1.3"/><path d="M32 24 L79 67 M22 49 L75 70" stroke="#f2e3c3" stroke-width="6" opacity=".9"/><path d="M43 33 L80 64" stroke="#14171a" stroke-width="5"/></g>
+<path d="M58 60 Q75 45 99 49 Q122 48 135 58 Q135 72 111 81 Q88 89 66 75Z" fill="url(#vh-body)" stroke="#825433" stroke-width="1.3"/>
+<path d="M103 53 Q116 36 129 39 Q144 41 145 56 Q144 68 128 69 L116 63Z" fill="#d8a16b" stroke="#995d40" stroke-width="1.2"/>
+<g stroke="#9f673f" stroke-width="2" stroke-linecap="round"><path d="M117 43 L108 16"/><path d="M124 40 L122 7"/><path d="M131 40 L137 11"/><path d="M137 43 L151 21"/><path d="M142 46 L158 30"/></g><g fill="#252323"><path d="M105 16 L110 13 112 21Z"/><path d="M120 7 L125 7 124 15Z"/><path d="M136 10 L141 12 136 18Z"/><path d="M150 20 L155 24 147 26Z"/><path d="M158 30 L163 34 156 37Z"/></g>
+<path d="M142 54 Q163 57 184 75" fill="none" stroke="#3c3430" stroke-width="3" stroke-linecap="round"/><path d="M144 54 Q165 59 186 77" fill="none" stroke="#c49267" stroke-width=".9"/><circle cx="137" cy="48" r="2.2" fill="#1f1d1a"/>
+<g class="vio-cinema__wing wing--front"><path d="M84 62 Q59 23 39 2 Q36 36 58 54 L25 35 Q38 71 84 78Z" fill="url(#vh-wing)" stroke="#262423" stroke-width="1.1"/><path d="M38 19 L78 68 M30 41 L78 74" fill="none" stroke="#f0e0c4" stroke-width="6"/><path d="M50 32 L79 64" fill="none" stroke="#171718" stroke-width="5"/></g></svg></span>
+  <span class="vio-cinema__bird" data-species="dove" aria-hidden="true"><svg viewBox="0 0 190 120" role="presentation" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="vd-body" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#faf5df"/><stop offset=".45" stop-color="#eee7d5"/><stop offset="1" stop-color="#a5adb2"/></linearGradient><linearGradient id="vd-wing" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#fffdf4"/><stop offset=".68" stop-color="#d0d7d6"/><stop offset="1" stop-color="#8d969a"/></linearGradient></defs>
+<path d="M69 72 Q47 66 10 79 L28 87 11 93 Q48 94 72 84Z" fill="#e0e1d9" stroke="#adb5af" stroke-width="1"/><path d="M15 82 Q40 85 61 82 M14 92 Q38 89 61 85" fill="none" stroke="#aab5b8" stroke-width="1"/>
+<g class="vio-cinema__wing wing--back"><path d="M85 65 Q50 25 19 10 Q22 46 46 68 L8 45 Q26 84 86 83Z" fill="url(#vd-wing)" stroke="#b3b8b9" stroke-width="1.3"/><path d="M29 23 Q42 46 79 69 M14 48 Q49 72 82 77 M43 36 Q60 60 84 69" fill="none" stroke="#899da6" stroke-width="1.3" opacity=".7"/></g>
+<path d="M52 70 Q62 44 99 47 Q123 44 135 59 Q138 77 113 85 Q85 96 59 81Z" fill="url(#vd-body)" stroke="#9da6a1" stroke-width="1"/>
+<path d="M110 51 Q126 34 139 41 Q151 48 146 61 Q141 75 123 70 L115 61Z" fill="#f5eedb" stroke="#b6afa0" stroke-width="1.3"/><path d="M145 52 L165 57 146 61Z" fill="#d4a27a"/><circle cx="138" cy="50" r="2.2" fill="#2a2c2d"/><circle cx="138.5" cy="49.3" r=".6" fill="white"/>
+<g class="vio-cinema__wing wing--front"><path d="M87 65 Q49 26 27 5 Q21 43 53 66 L14 49 Q33 88 83 86Z" fill="url(#vd-wing)" stroke="#a6b2b1" stroke-width="1.2"/><path d="M27 18 Q49 47 78 69 M21 57 Q45 74 77 80 M38 28 Q58 52 81 71" fill="none" stroke="#a4a9a7" stroke-width="1.3" opacity=".72"/></g></svg></span>
+  <span class="vio-cinema__bird" data-species="swallow" aria-hidden="true"><svg viewBox="0 0 190 120" role="presentation" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="vs-body" x1=".2" x2=".8" y1="0" y2="1"><stop stop-color="#0b2534"/><stop offset=".42" stop-color="#275976"/><stop offset="1" stop-color="#e5dfca"/></linearGradient><linearGradient id="vs-wing" x1="0" x2=".7" y1="0" y2="1"><stop stop-color="#1c384d"/><stop offset=".55" stop-color="#4a6579"/><stop offset="1" stop-color="#101e29"/></linearGradient></defs>
+<path d="M82 70 Q40 69 8 99 L51 82 20 116 Q61 90 79 80Z" fill="#152738" stroke="#526879" stroke-width=".85"/><path d="M79 70 Q39 59 18 65" fill="none" stroke="#263e51" stroke-width="4"/>
+<g class="vio-cinema__wing wing--back"><path d="M84 61 Q61 36 13 0 Q31 38 53 61 L5 41 Q32 75 80 73Z" fill="url(#vs-wing)" stroke="#152a36" stroke-width="1.1"/><path d="M22 10 Q52 44 81 65 M15 44 Q54 64 81 69" fill="none" stroke="#8397a4" stroke-width="1.2" opacity=".6"/></g>
+<path d="M60 65 Q71 47 97 51 Q115 50 128 62 Q128 75 104 79 Q79 85 63 75Z" fill="url(#vs-body)" stroke="#172b39" stroke-width="1.2"/><path d="M80 70 Q108 74 119 67 Q110 82 88 78Z" fill="#ede5ce"/><path d="M108 56 Q120 44 134 48 Q147 55 139 65 Q129 72 119 67Z" fill="#13334a" stroke="#173044" stroke-width="1"/><path d="M130 57 L163 60 135 65Z" fill="#28272b"/><path d="M124 63 Q131 63 134 61" fill="none" stroke="#b45e48" stroke-width="3"/><circle cx="134" cy="55" r="2" fill="#0b0d12"/>
+<g class="vio-cinema__wing wing--front"><path d="M83 63 Q55 32 28 0 Q25 38 48 56 L6 31 Q26 72 80 77Z" fill="url(#vs-wing)" stroke="#162c3a" stroke-width="1.1"/><path d="M29 14 Q49 43 79 65 M13 38 Q48 60 78 72" fill="none" stroke="#819ca8" stroke-width="1.1" opacity=".75"/></g></svg></span>
+  </div>
   <div class="vio-cinema__copy"><img class="vio-cinema__mark" src="assets/violeta-intro-mark.png" loading="lazy" alt=""><span class="vio-cinema__eyebrow">VIOLETA INTERIORS</span><h2 data-ar="مساحات تحكي قصتك" data-en="Interiors that tell your story">مساحات تحكي قصتك</h2><p data-ar="من تفاصيل الفكرة إلى إحساس المكان، نصمم مساحات تنبض بالحياة." data-en="From the first idea to the feeling of home, we shape spaces with soul.">من تفاصيل الفكرة إلى إحساس المكان، نصمم مساحات تنبض بالحياة.</p></div>
 </section>
 <section class="idea-cta">
@@ -505,126 +502,106 @@ function sync(){const pause=document.hidden||!box.hidden;document.body.classList
 new MutationObserver(sync).observe(box,{attributes:true,attributeFilter:['hidden']});document.addEventListener('visibilitychange',sync);sync();
 })();
 </script><script type="module" id="vio-cinema-preview-script">
-// Enhancement only: on CDN/GLB/WebGL failure, the existing CSS birds remain visible.
-const section = document.getElementById('violeta-cinematic');
-if (section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const canvas = section.querySelector('.vio-cinema__canvas');
-  let initialized = false;
-  let running = false;
-  let raf = 0;
-  let dispose = () => {};
-  const observer = new IntersectionObserver(entries => {
-    const visible = entries[0].isIntersecting && !document.hidden;
-    if (visible && !initialized) { initialized = true; void init(); }
-    running = visible;
-  }, { rootMargin: '160px', threshold: 0 });
-  observer.observe(section);
-  async function init() {
-    try {
-      const THREE = await import('three');
-      const [{ GLTFLoader }, { DRACOLoader }, { MeshoptDecoder }, { RoomEnvironment }] = await Promise.all([
-        import('three/addons/loaders/GLTFLoader.js'),
-        import('three/addons/loaders/DRACOLoader.js'),
-        import('three/addons/libs/meshopt_decoder.module.js'),
-        import('three/addons/environments/RoomEnvironment.js')
-      ]);
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.NeutralToneMapping;
-      renderer.toneMappingExposure = 1.08;
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(32, 1, .1, 100);
-      camera.position.z = 10;
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      const env = pmrem.fromScene(new RoomEnvironment(), .04);
-      scene.environment = env.texture;
-      scene.environmentIntensity = .75;
-      scene.add(new THREE.HemisphereLight('#fff7e5', '#7e6048', 1.0));
-      const key = new THREE.DirectionalLight('#ffe6b2', 2.1); key.position.set(3, 5, 6); scene.add(key);
-      const rim = new THREE.DirectionalLight('#fff0c6', .9); rim.position.set(-4, 2, -3); scene.add(rim);
-      const draco = new DRACOLoader();
-      draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
-      const loader = new GLTFLoader();
-      loader.setDRACOLoader(draco); loader.setMeshoptDecoder(MeshoptDecoder);
-      const base = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/';
-      const urls = [base + 'hf_20261004_073345_12721630-c589-442f-8884-e4a445cd8980.glb', base + 'hf_20261004_073347_06b339a7-70bc-4ecd-9e72-1a4143264da9.glb'];
-      const models = await Promise.all(urls.map(url => loader.loadAsync(url)));
-      // Static exhibition models should not replace the flapping SVG fallback.
-      // We only show 3D when both GLBs actually include playable flight clips.
-      if (models.some(gltf => !gltf.animations.length)) {
-        draco.dispose(); env.dispose(); pmrem.dispose(); renderer.dispose();
-        console.info('VIOLETA: static GLBs; keeping the moving bird fallback until wing animations are available.');
-        return;
-      }
-      const tracks = [
-        {from:[-.13,.12],to:[.32,.18],duration:12.6,phase:.31,size:.44,model:0,yaw:.75},
-        {from:[1.13,.16],to:[.68,.10],duration:10.8,phase:.62,size:.34,model:1,yaw:2.35},
-        {from:[-.14,.82],to:[.32,.77],duration:15.1,phase:.70,size:.29,model:1,yaw:.75},
-        {from:[1.14,.78],to:[.70,.83],duration:11.9,phase:.15,size:.24,model:0,yaw:2.35}
-      ];
-      const birds = tracks.map((track, i) => {
-        const root = new THREE.Group();
-        const model = models[track.model].scene.clone(true);
-        const bounds = new THREE.Box3().setFromObject(model);
-        const sphere = bounds.getBoundingSphere(new THREE.Sphere());
-        model.position.sub(sphere.center);
-        model.scale.setScalar(1 / Math.max(sphere.radius, .0001));
-        model.traverse(obj => {
-          if (!obj.isMesh) return;
-          obj.frustumCulled = false;
-          obj.material = new THREE.MeshStandardMaterial({color:'#d6b276',metalness:.72,roughness:.32,side:THREE.DoubleSide,envMapIntensity:1.0});
-        });
-        const mixer = new THREE.AnimationMixer(model);
-        for (const clip of models[track.model].animations) mixer.clipAction(clip).play();
-        root.add(model); scene.add(root);
-        return { root, track, mixer, i };
-      });
-      let width = 1, height = 1, worldW = 1, worldH = 1;
-      function resize() {
-        const rect = section.getBoundingClientRect();
-        width = Math.max(1, rect.width); height = Math.max(1, rect.height);
-        renderer.setSize(width, height, false);
-        camera.aspect = width / height; camera.updateProjectionMatrix();
-        worldH = 2 * Math.tan((32 * Math.PI / 180) / 2) * camera.position.z;
-        worldW = worldH * camera.aspect;
-      }
-      resize(); const ro = new ResizeObserver(resize); ro.observe(section);
-      section.classList.add('is-3d');
-      const started = performance.now();
-      let previousTime = started;
-      const mobile = window.matchMedia('(max-width: 760px)');
-      function draw(now) {
-        raf = requestAnimationFrame(draw);
-        const delta = Math.min((now - previousTime) / 1000, .1);
-        previousTime = now;
-        if (!running || document.hidden) return;
-        const time = (now - started) / 1000;
-        for (const {root,track,mixer,i} of birds) {
-          const progress = ((time / track.duration + track.phase) % 1 + 1) % 1;
-          // Fly all the way in/out along the safe upper/lower perimeter lanes.
-          const u = track.from[0] + (track.to[0] - track.from[0]) * progress;
-          const v = track.from[1] + (track.to[1] - track.from[1]) * progress
-            + Math.sin(progress * Math.PI * 3 + i) * .018;
-          const fade = Math.min(1, progress / .09, (1 - progress) / .09);
-          root.visible = fade > .02 && !(mobile.matches && i===3);
-          root.position.set((u-.5)*worldW, (.5-v)*worldH, i%2===0?.2:-.2);
-          root.scale.setScalar(track.size * (mobile.matches ? .82 : 1) * Math.max(0,fade));
-          root.rotation.set(.12 + Math.sin(time*.42 + i)*.08, track.yaw + Math.sin(time*.46 + i)*.17, Math.sin(time*.53 + i)*.09);
-          mixer.update(delta);
-        }
-        renderer.render(scene, camera);
-      }
-      raf = requestAnimationFrame(draw);
-      dispose = () => { cancelAnimationFrame(raf);ro.disconnect();draco.dispose();env.dispose();pmrem.dispose();renderer.dispose(); };
-      window.addEventListener('pagehide', dispose, {once:true});
-    } catch (error) {
-      section.classList.remove('is-3d');
-      console.info('VIOLETA 3D enhancement unavailable; showing lightweight bird animation.', error);
-    }
-  }
-}
+// VIOLETA / natural staggered passage: independent full-width crossings, no centre convergence.
+// Illustrated bird silhouettes are a lightweight local preview. They are not rigged 3D or live-action footage.
+(() => {
+  const section = document.getElementById('violeta-cinematic');
+  if (!section) return;
+  const copy = section.querySelector('.vio-cinema__copy');
+  const specimens = [...section.querySelectorAll('.vio-cinema__bird')];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const small = window.matchMedia('(max-width: 760px)');
+  const between = (min,max) => min + Math.random() * (max-min);
+  const clamp = (v,a,b) => Math.max(a,Math.min(v,b));
+  const flights = [];
+  let visible = false, raf = 0, nextAt = 0, lastSpecies = -1, order = [], speciesCursor = 0;
+  const sizes = { kingfisher:[65,94], hoopoe:[92,121], dove:[85,116], swallow:[54,82] };
 
+  function reshuffle() {
+    order = specimens.map((_,i)=>i);
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    if(order[0]===lastSpecies && order.length>1) [order[0],order[1]]=[order[1],order[0]];
+    speciesCursor=0;
+  }
+  function chooseBird(){
+    if (speciesCursor >= order.length) reshuffle();
+    let index=order[speciesCursor++];
+    if(specimens[index].classList.contains('is-flying')) {
+      const alternative=specimens.findIndex((el,i)=>!el.classList.contains('is-flying') && i!==lastSpecies);
+      if(alternative<0)return null;
+      index=alternative;
+    }
+    lastSpecies=index;
+    return specimens[index];
+  }
+  function spawn(now) {
+    if(flights.length >= (small.matches?1:2)) return;
+    const el=chooseBird();if(!el)return;
+    const r=section.getBoundingClientRect();
+    const cr=copy.getBoundingClientRect();
+    const w=r.width, h=r.height;
+    const species=el.dataset.species;
+    const size=between(...sizes[species])*(small.matches?.62:1);
+    const upper=Math.random()<.53;
+    const pad=size*.37+11;
+    // Preserve a real clear band around the headline and logo at every viewport size.
+    let cy=upper ? between(Math.max(pad,h*.075),h*.17) : between(h*.80, Math.min(h-pad,h*.93));
+    const above=cr.top-r.top-pad-15;
+    const below=cr.bottom-r.top+pad+15;
+    cy=upper?Math.min(cy,above):Math.max(cy,below);
+    cy=clamp(cy,pad,h-pad);
+    const leftToRight=Math.random()<.5;
+    const off=size*.65+30;
+    const x0=leftToRight?-off:w+off, x1=leftToRight?w+off:-off;
+    const speed=between(small.matches?63:118,small.matches?102:185); // pixels / second
+    const duration=Math.abs(x1-x0)/speed*1000;
+    const phase=between(0,6.3);
+    const wave=between(2,Math.min(small.matches?6:13,h*.02));
+    const lean=between(-3.4,3.4);
+    const depth=between(.91,1.08);
+    el.style.width=size+'px';
+    for (const wing of el.querySelectorAll('.vio-cinema__wing')) {
+      const base = {kingfisher:.53,hoopoe:.94,dove:1.12,swallow:.71}[species];
+      wing.style.setProperty('--wing-time',(base*between(.92,1.10)).toFixed(3)+'s');
+    }
+    el.classList.add('is-flying');
+    flights.push({el,x0,x1,cy,size,phase,wave,lean,depth,leftToRight,duration,born:now});
+  }
+  function clearFlights(){
+    while(flights.length){const f=flights.pop();f.el.classList.remove('is-flying');f.el.style.transform='';}
+  }
+  function tick(now){
+    raf=0;
+    if(!visible || document.hidden || reduce.matches || document.body.classList.contains('motion-paused')){stop();return;}
+    if(!nextAt)nextAt=now+250;
+    if(now>=nextAt){spawn(now);nextAt=now+between(3000,6900)+(Math.random()<.28?between(1600,3900):0);}
+    for(let i=flights.length-1;i>=0;i--){
+      const f=flights[i];const t=clamp((now-f.born)/f.duration,0,1);
+      if(t>=1){f.el.classList.remove('is-flying');flights.splice(i,1);continue;}
+      const x=f.x0+(f.x1-f.x0)*t;
+      // Nearly level travel with subtle natural body lift; never steers towards the copy.
+      const y=f.cy + Math.sin(t*Math.PI*2+f.phase)*f.wave + Math.sin(t*Math.PI*4+f.phase*.61)*f.wave*.24;
+      const slightBank=f.lean+Math.cos(t*Math.PI*2+f.phase)*2.8;
+      const flip=f.leftToRight?1:-1;
+      f.el.style.transform=`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) translate(-50%,-50%) scaleX(${flip}) rotate(${slightBank.toFixed(2)}deg) scale(${f.depth.toFixed(3)})`;
+    }
+    raf=requestAnimationFrame(tick);
+  }
+  function stop(){if(raf){cancelAnimationFrame(raf);raf=0;}clearFlights();nextAt=0;}
+  function resume(){if(visible&&!document.hidden&&!reduce.matches&&!document.body.classList.contains('motion-paused')&&!raf){raf=requestAnimationFrame(tick);}}
+  const io=new IntersectionObserver(e=>{visible=e[0].isIntersecting;if(!visible)stop();else resume();},{rootMargin:'80px',threshold:0});
+  io.observe(section);
+  const onVisibility=()=>{if(document.hidden)stop();else resume();};
+  document.addEventListener('visibilitychange',onVisibility);
+  const onMotion=()=>{stop();resume();};
+  reduce.addEventListener('change',onMotion);
+  small.addEventListener('change',onMotion);
+  window.addEventListener('resize',onMotion,{passive:true});
+  const observer=new MutationObserver(()=>{if(document.body.classList.contains('motion-paused'))stop();else resume();});
+  observer.observe(document.body,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('pagehide',()=>{stop();io.disconnect();observer.disconnect();},{once:true});
+  reshuffle();
+})();
 </script>
 </body>
 </html>
