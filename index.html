@@ -529,14 +529,43 @@ const birds=points.map(p=>{const root=new THREE.Group();root.position.set(p.x,p.
 const sculpted=sculpt();root.add(sculpted.bird);flock.add(root);return {root,bird:sculpted.bird,wings:sculpted.wings,phase:p.phase};});
 draco=new DRACOLoader();draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
 const loader=new GLTFLoader();loader.setDRACOLoader(draco);loader.setMeshoptDecoder(MeshoptDecoder);
-const sourceURL='https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261004_073345_12721630-c589-442f-8884-e4a445cd8980.glb';
-// Prefer real rigged motion from the provided GLB only if its clip includes wing movement;
-// otherwise keep true 3D mesh-based feather articulation instead of flat cartoon silhouettes.
-loader.load(sourceURL,model=>{
- if(disposed||!model.animations.some(x=>/wing|flap|fly/i.test(x.name)))return;
- // Static 3D specimens should not replace flying articulated birds.
- console.info('VIOLETA: motion-capable specimen available for future rig review');
-},undefined,()=>{});
+const sourceBase='https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/';
+const specimens=[
+ sourceBase+'hf_20261004_073345_12721630-c589-442f-8884-e4a445cd8980.glb',
+ sourceBase+'hf_20261004_073347_06b339a7-70bc-4ecd-9e72-1a4143264da9.glb'
+];
+// Upgrade the geometry to the supplied detailed 3D specimens when they load.
+// Keep the golden wing-animated 3D sculpture if a GLB fails to load.
+specimens.forEach((url,modelIndex)=>{
+ loader.load(url,gltf=>{
+  if(disposed)return;
+  const bounds=new THREE.Box3().setFromObject(gltf.scene),sphere=bounds.getBoundingSphere(new THREE.Sphere());
+  if(!Number.isFinite(sphere.radius)||sphere.radius<=.0001)return;
+  const indices=modelIndex===0?[0,2]:[1];
+  indices.forEach(i=>{
+   const b=birds[i],model=gltf.scene.clone(true);
+   model.position.sub(sphere.center);
+   model.traverse(node=>{
+    if(!node.isMesh)return;
+    node.frustumCulled=false;
+    const materials=Array.isArray(node.material)?node.material:[node.material];
+    const converted=materials.map(m=>{
+      if(!m)return new THREE.MeshStandardMaterial({color:0xdab66a,metalness:.7,roughness:.3});
+      const v=m.clone();
+      if(v.color)v.color.set(0xe3bd70);
+      if('metalness' in v)v.metalness=.63;
+      if('roughness' in v)v.roughness=.35;
+      v.side=THREE.DoubleSide;v.needsUpdate=true;
+      return v;
+    });
+    node.material=Array.isArray(node.material)?converted:converted[0];
+   });
+   const normalized=new THREE.Group();normalized.scale.setScalar(1/sphere.radius);normalized.add(model);
+   b.root.remove(b.bird);b.root.add(normalized);
+   b.bird=normalized;b.wings=[];
+  });
+ },undefined,()=>{});
+});
 let W=1,H=1,worldW=1,worldH=1;
 function resize(){const r=section.getBoundingClientRect();W=Math.max(1,r.width);H=Math.max(1,r.height);
 renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix();worldH=20*Math.tan(Math.PI/12);worldW=worldH*camera.aspect;}
