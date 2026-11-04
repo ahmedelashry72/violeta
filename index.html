@@ -105,25 +105,51 @@
 .vio-cinema.is-3d .vio-cinema__canvas{opacity:1}
 .vio-cinema__fallback{pointer-events:none;transition:opacity .3s ease}
 .vio-cinema.is-3d .vio-cinema__fallback{opacity:0;visibility:hidden}
-.vio-cinema__bird{position:absolute;display:block;width:clamp(55px,7vw,112px);aspect-ratio:10/7;color:#dec184;opacity:.9;filter:drop-shadow(0 2px 5px rgba(20,11,0,.25));animation:vio-bird-one 14s ease-in-out infinite alternate}
+.vio-cinema__bird{position:absolute;display:block;aspect-ratio:10/7;color:#dec184;opacity:0;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(20,11,0,.25));will-change:transform,opacity;animation-timing-function:linear;animation-iteration-count:infinite}
 .vio-cinema__bird svg{display:block;width:100%;height:100%;overflow:visible}
-.vio-cinema__bird .wing{transform-box:fill-box;transform-origin:60% 70%;animation:vio-bird-flap 1.2s ease-in-out infinite alternate}
+.vio-cinema__bird .wing{transform-box:fill-box;transform-origin:60% 70%;animation:vio-bird-flap 1.12s ease-in-out infinite alternate}
 .vio-cinema__bird .wing--back{transform-origin:25% 72%;animation-delay:-.45s}
-.vio-cinema__bird--a{left:6%;top:21%;width:clamp(65px,8vw,125px);animation-duration:17s}
-.vio-cinema__bird--b{right:8%;top:23%;width:clamp(43px,5.3vw,78px);animation-name:vio-bird-two;animation-duration:12s;animation-delay:-3.2s}
-.vio-cinema__bird--c{left:11%;bottom:14%;width:clamp(44px,5.5vw,83px);animation-name:vio-bird-three;animation-duration:19s;animation-delay:-6.6s}
-.vio-cinema__bird--d{right:12%;bottom:18%;width:clamp(35px,4vw,63px);animation-name:vio-bird-two;animation-duration:15s;animation-delay:-8s}
-@keyframes vio-bird-one{0%{transform:translate3d(-1vw,0,0) rotate(-9deg)}40%{transform:translate3d(2vw,2.2vw,0) rotate(4deg)}100%{transform:translate3d(-1vw,-1vw,0) rotate(-3deg)}}
-@keyframes vio-bird-two{0%{transform:translate3d(1vw,1.5vw,0) rotate(8deg)}55%{transform:translate3d(-2vw,-.7vw,0) rotate(-7deg)}100%{transform:translate3d(.5vw,-2vw,0) rotate(2deg)}}
-@keyframes vio-bird-three{0%{transform:translate3d(-1vw,-1vw,0) rotate(2deg)}45%{transform:translate3d(1.5vw,1.8vw,0) rotate(-8deg)}100%{transform:translate3d(0,-1.5vw,0) rotate(5deg)}}
+/* Safe flight lanes: two above and two below the central logo/copy. */
+.vio-cinema__bird--a{left:0;top:9%;width:clamp(65px,8vw,125px);animation-name:vio-bird-flight-left-top;animation-duration:12.6s;animation-delay:-3.9s}
+.vio-cinema__bird--b{right:0;top:13%;width:clamp(43px,5.3vw,78px);animation-name:vio-bird-flight-right-top;animation-duration:10.8s;animation-delay:-6.7s}
+.vio-cinema__bird--c{left:0;bottom:11%;width:clamp(44px,5.5vw,83px);animation-name:vio-bird-flight-left-bottom;animation-duration:15.1s;animation-delay:-9.4s}
+.vio-cinema__bird--d{right:0;bottom:16%;width:clamp(35px,4vw,63px);animation-name:vio-bird-flight-right-bottom;animation-duration:11.9s;animation-delay:-1.8s}
+@keyframes vio-bird-flight-left-top{
+ 0%{transform:translate3d(-140%,8px,0) rotate(-9deg) scale(.85);opacity:0}
+ 8%{opacity:.9}20%{transform:translate3d(7vw,-5px,0) rotate(-2deg) scale(.95)}
+ 42%{transform:translate3d(17vw,10px,0) rotate(3deg) scale(1.04)}
+ 70%{transform:translate3d(29vw,-9px,0) rotate(-4deg) scale(1)}
+ 90%{opacity:.9}100%{transform:translate3d(38vw,-15px,0) rotate(-7deg) scale(.86);opacity:0}
+}
+@keyframes vio-bird-flight-right-top{
+ 0%{transform:translate3d(140%,6px,0) scaleX(-1) rotate(-5deg);opacity:0}
+ 9%{opacity:.86}26%{transform:translate3d(-9vw,-5px,0) scaleX(-1) rotate(0)}
+ 51%{transform:translate3d(-21vw,8px,0) scaleX(-1) rotate(5deg)}
+ 78%{transform:translate3d(-30vw,-4px,0) scaleX(-1) rotate(-3deg)}
+ 91%{opacity:.86}100%{transform:translate3d(-39vw,-13px,0) scaleX(-1) rotate(-8deg);opacity:0}
+}
+@keyframes vio-bird-flight-left-bottom{
+ 0%{transform:translate3d(-150%,15px,0) rotate(2deg) scale(.75);opacity:0}
+ 8%{opacity:.85}24%{transform:translate3d(9vw,-8px,0) rotate(-8deg) scale(.9)}
+ 50%{transform:translate3d(20vw,8px,0) rotate(4deg) scale(.98)}
+ 75%{transform:translate3d(30vw,-11px,0) rotate(-5deg) scale(1)}
+ 92%{opacity:.85}100%{transform:translate3d(39vw,4px,0) rotate(3deg) scale(.88);opacity:0}
+}
+@keyframes vio-bird-flight-right-bottom{
+ 0%{transform:translate3d(155%,-10px,0) scaleX(-1) rotate(-3deg) scale(.83);opacity:0}
+ 10%{opacity:.84}29%{transform:translate3d(-10vw,7px,0) scaleX(-1) rotate(4deg) scale(.92)}
+ 59%{transform:translate3d(-24vw,-8px,0) scaleX(-1) rotate(-5deg) scale(1.05)}
+ 86%{opacity:.84}100%{transform:translate3d(-38vw,9px,0) scaleX(-1) rotate(6deg) scale(.92);opacity:0}
+}
 @keyframes vio-bird-flap{from{transform:scaleY(.63) rotate(-7deg)}to{transform:scaleY(1.03) rotate(6deg)}}
+body.motion-paused .vio-cinema__bird,body.motion-paused .vio-cinema__bird .wing{animation-play-state:paused!important}
 .vio-cinema__copy{position:relative;z-index:2;width:min(600px,65%);padding:55px 20px;text-align:center;pointer-events:none}
 .vio-cinema__mark{width:90px;height:90px;object-fit:contain;margin:0 auto 20px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.2))}
 .vio-cinema__eyebrow{display:block;font:600 11px/1.6 'Manrope',sans-serif;letter-spacing:.22em;color:#ecd4a3;direction:ltr;margin-bottom:15px}
 .vio-cinema__copy h2{font-size:clamp(34px,4.1vw,64px);font-weight:500;line-height:1.3;letter-spacing:-.012em;color:#fff;margin:0}
 .vio-cinema__copy p{color:#f1e9dc;font-size:clamp(15px,1.4vw,19px);line-height:1.75;max-width:38ch;margin:16px auto 0}
 html[lang=en] .vio-cinema__copy h2{font-family:'Manrope',sans-serif;font-size:clamp(27px,3.4vw,52px);line-height:1.18;letter-spacing:-.03em}
-@media(max-width:760px){.vio-cinema{min-height:520px}.vio-cinema__scene:after{background:rgba(4,29,26,.7)}.vio-cinema__copy{width:min(100%,390px);padding:80px 34px}.vio-cinema__mark{width:70px;height:70px}.vio-cinema__copy h2{font-size:clamp(30px,8vw,40px)}.vio-cinema__copy p{font-size:15px}.vio-cinema__bird--a{left:2%;top:10%}.vio-cinema__bird--b{right:2%;top:15%}.vio-cinema__bird--c{left:5%;bottom:7%}.vio-cinema__bird--d{right:5%;bottom:8%}.vio-cinema__bird{opacity:.75}}
+@media(max-width:760px){.vio-cinema{min-height:520px}.vio-cinema__scene:after{background:rgba(4,29,26,.7)}.vio-cinema__copy{width:min(100%,390px);padding:80px 34px}.vio-cinema__mark{width:70px;height:70px}.vio-cinema__copy h2{font-size:clamp(30px,8vw,40px)}.vio-cinema__copy p{font-size:15px}.vio-cinema__bird--a{top:7%}.vio-cinema__bird--b{top:10%}.vio-cinema__bird--c{bottom:9%}.vio-cinema__bird--d{bottom:11%}}
 @media(prefers-reduced-motion:reduce){.vio-cinema__lighting,.vio-cinema__bird,.vio-cinema__bird .wing{animation:none!important}.vio-cinema__bird{opacity:.5}.vio-cinema__canvas{display:none!important}}
 
 </style>
@@ -524,11 +550,18 @@ if (section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const base = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/';
       const urls = [base + 'hf_20261004_073345_12721630-c589-442f-8884-e4a445cd8980.glb', base + 'hf_20261004_073347_06b339a7-70bc-4ecd-9e72-1a4143264da9.glb'];
       const models = await Promise.all(urls.map(url => loader.loadAsync(url)));
+      // Static exhibition models should not replace the flapping SVG fallback.
+      // We only show 3D when both GLBs actually include playable flight clips.
+      if (models.some(gltf => !gltf.animations.length)) {
+        draco.dispose(); env.dispose(); pmrem.dispose(); renderer.dispose();
+        console.info('VIOLETA: static GLBs; keeping the moving bird fallback until wing animations are available.');
+        return;
+      }
       const tracks = [
-        {u:.105,v:.22,span:.045,phase:.1,rate:.4,size:.44,model:0},
-        {u:.875,v:.28,span:.042,phase:2.1,rate:.52,size:.34,model:1},
-        {u:.16,v:.77,span:.04,phase:4.0,rate:.37,size:.29,model:1},
-        {u:.89,v:.73,span:.038,phase:5.8,rate:.45,size:.24,model:0}
+        {from:[-.13,.12],to:[.32,.18],duration:12.6,phase:.31,size:.44,model:0,yaw:.75},
+        {from:[1.13,.16],to:[.68,.10],duration:10.8,phase:.62,size:.34,model:1,yaw:2.35},
+        {from:[-.14,.82],to:[.32,.77],duration:15.1,phase:.70,size:.29,model:1,yaw:.75},
+        {from:[1.14,.78],to:[.70,.83],duration:11.9,phase:.15,size:.24,model:0,yaw:2.35}
       ];
       const birds = tracks.map((track, i) => {
         const root = new THREE.Group();
@@ -542,8 +575,10 @@ if (section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           obj.frustumCulled = false;
           obj.material = new THREE.MeshStandardMaterial({color:'#d6b276',metalness:.72,roughness:.32,side:THREE.DoubleSide,envMapIntensity:1.0});
         });
+        const mixer = new THREE.AnimationMixer(model);
+        for (const clip of models[track.model].animations) mixer.clipAction(clip).play();
         root.add(model); scene.add(root);
-        return { root, track, i };
+        return { root, track, mixer, i };
       });
       let width = 1, height = 1, worldW = 1, worldH = 1;
       function resize() {
@@ -557,18 +592,26 @@ if (section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       resize(); const ro = new ResizeObserver(resize); ro.observe(section);
       section.classList.add('is-3d');
       const started = performance.now();
+      let previousTime = started;
       const mobile = window.matchMedia('(max-width: 760px)');
       function draw(now) {
         raf = requestAnimationFrame(draw);
+        const delta = Math.min((now - previousTime) / 1000, .1);
+        previousTime = now;
         if (!running || document.hidden) return;
         const time = (now - started) / 1000;
-        for (const {root,track,i} of birds) {
-          root.visible = !(mobile.matches && i===3);
-          const u = track.u + Math.sin(time * track.rate + track.phase) * track.span;
-          const v = track.v + Math.sin(time * track.rate * 1.31 + track.phase) * .032;
+        for (const {root,track,mixer,i} of birds) {
+          const progress = ((time / track.duration + track.phase) % 1 + 1) % 1;
+          // Fly all the way in/out along the safe upper/lower perimeter lanes.
+          const u = track.from[0] + (track.to[0] - track.from[0]) * progress;
+          const v = track.from[1] + (track.to[1] - track.from[1]) * progress
+            + Math.sin(progress * Math.PI * 3 + i) * .018;
+          const fade = Math.min(1, progress / .09, (1 - progress) / .09);
+          root.visible = fade > .02 && !(mobile.matches && i===3);
           root.position.set((u-.5)*worldW, (.5-v)*worldH, i%2===0?.2:-.2);
-          root.scale.setScalar(track.size * (mobile.matches ? .82 : 1));
-          root.rotation.set(.12 + Math.sin(time*.42 + i)*.08, .75 + Math.cos(time*.46 + i)*.24, Math.sin(time*.53 + i)*.08);
+          root.scale.setScalar(track.size * (mobile.matches ? .82 : 1) * Math.max(0,fade));
+          root.rotation.set(.12 + Math.sin(time*.42 + i)*.08, track.yaw + Math.sin(time*.46 + i)*.17, Math.sin(time*.53 + i)*.09);
+          mixer.update(delta);
         }
         renderer.render(scene, camera);
       }
