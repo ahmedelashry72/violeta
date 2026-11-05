@@ -95,7 +95,7 @@
 /* VIOLETA premium cinematic section. Isolated to #violeta-cinematic. */
 #violeta-cinematic{position:relative;isolation:isolate;overflow:hidden;min-height:clamp(510px,54vw,690px);display:grid;place-items:center;background:#103F3C;color:#f5f1e8;contain:layout paint}
 #violeta-cinematic .vio-cinema__scene,#violeta-cinematic .vio-cinema__slides,#violeta-cinematic .vio-cinema__slide,#violeta-cinematic .vio-cinema__lighting,#violeta-cinematic .vio-cinema__bird-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#violeta-cinematic .vio-cinema__scene{z-index:-2;overflow:hidden;background:#0b2f2d}
+#violeta-cinematic .vio-cinema__scene{z-index:0;overflow:hidden;background:#0b2f2d}
 /* Three original VIOLETA interiors. One 36s loop, 12s per scene. The incoming scene fades in ON TOP of the
    outgoing one (which stays fully opaque until covered) so the crossfade never dips toward the teal base. */
 #violeta-cinematic .vio-cinema__slide{background-size:cover;background-position:var(--pos,50% 50%);opacity:0;z-index:1;
@@ -109,14 +109,14 @@
 @keyframes vio-fade{0%{opacity:0;z-index:3}6.667%{opacity:1;z-index:3}6.7%{opacity:1;z-index:2}40%{opacity:1;z-index:2}40.01%{opacity:0;z-index:1}100%{opacity:0;z-index:1}}
 @keyframes vio-cam{0%{transform:translate3d(var(--x0),var(--y0),0) scale(var(--s0))}40%{transform:translate3d(var(--x1),var(--y1),0) scale(var(--s1))}100%{transform:translate3d(var(--x1),var(--y1),0) scale(var(--s1))}}
 #violeta-cinematic .vio-cinema__scene::after{content:"";position:absolute;inset:0;z-index:5;background:radial-gradient(ellipse 54% 80% at 50% 54%,rgba(6,30,28,.76),rgba(6,30,28,.66) 50%,rgba(6,30,28,.47) 100%),linear-gradient(0deg,rgba(6,30,28,.36),transparent 32%,rgba(6,30,28,.22));pointer-events:none}
-#violeta-cinematic .vio-cinema__lighting{z-index:0;opacity:.4;mix-blend-mode:screen;background:radial-gradient(ellipse 28% 38% at 15% 15%,rgba(244,196,119,.25),transparent 85%),radial-gradient(ellipse 22% 36% at 87% 71%,rgba(228,194,111,.25),transparent 80%);animation:vio-cinema-bloom 9s ease-in-out infinite alternate}
+#violeta-cinematic .vio-cinema__lighting{z-index:1;opacity:.4;mix-blend-mode:screen;background:radial-gradient(ellipse 28% 38% at 15% 15%,rgba(244,196,119,.25),transparent 85%),radial-gradient(ellipse 22% 36% at 87% 71%,rgba(228,194,111,.25),transparent 80%);animation:vio-cinema-bloom 9s ease-in-out infinite alternate}
 @keyframes vio-cinema-bloom{from{opacity:.21}to{opacity:.63}}
 #violeta-cinematic .vio-cinema__lighting::after{content:"";position:absolute;inset:-100%;background:linear-gradient(110deg,transparent 44%,rgba(255,231,182,.045) 49%,rgba(255,231,182,.09) 50%,transparent 56%);transform:translateX(-25%);animation:vio-cinema-sweep 13s ease-in-out infinite;pointer-events:none}
 @keyframes vio-cinema-sweep{0%,24%,100%{transform:translateX(-27%);opacity:0}35%{opacity:.8}62%{transform:translateX(27%);opacity:.3}64%{opacity:0}}
-#violeta-cinematic .vio-cinema__bird-layer{z-index:1;opacity:0;transition:opacity .7s ease;overflow:hidden}
+#violeta-cinematic .vio-cinema__bird-layer{z-index:2;opacity:0;transition:opacity .7s ease;overflow:hidden}
 #violeta-cinematic.is-3d-ready .vio-cinema__bird-layer{opacity:1}
 #violeta-cinematic .vio-cinema__bird-layer canvas{display:block;width:100%;height:100%;pointer-events:none}
-#violeta-cinematic .vio-cinema__copy{position:relative;z-index:2;text-align:center;width:min(610px,70%);padding:52px 20px;pointer-events:none;text-shadow:0 2px 18px rgba(0,0,0,.3)}
+#violeta-cinematic .vio-cinema__copy{position:relative;z-index:3;text-align:center;width:min(610px,70%);padding:52px 20px;pointer-events:none;text-shadow:0 2px 18px rgba(0,0,0,.3)}
 #violeta-cinematic .vio-cinema__mark{width:88px;height:88px;object-fit:contain;margin:0 auto 20px;filter:drop-shadow(0 3px 12px rgba(0,0,0,.25))}
 #violeta-cinematic .vio-cinema__eyebrow{display:block;font:600 11px/1.6 'Manrope',sans-serif;letter-spacing:.22em;color:#edcf97;direction:ltr;margin-bottom:15px}
 #violeta-cinematic .vio-cinema__copy h2{font-size:clamp(34px,4.1vw,62px);font-weight:500;line-height:1.3;letter-spacing:-.012em;color:#fff;margin:0}
