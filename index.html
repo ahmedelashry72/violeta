@@ -93,23 +93,25 @@
   </script>
 
 <style id="intro-entry-cue">
-/* Entry cue only: preserve the existing button, video and click handler. */
-#introGate{max-width:100%;box-sizing:border-box;padding:24px;gap:22px}
+/* Refined premium entry cue: preview only; original intro video, logo and handler remain intact. */
+#introGate{max-width:100%;box-sizing:border-box;padding:20px 24px 24px;gap:clamp(12px,2.6svh,20px);transform:translateY(-clamp(8px,2.2svh,24px))}
 #introGate span{animation:none;opacity:1}
-#introGate .intro-cta{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:64px;padding:12px 28px;border:2px solid #C6A15B;border-radius:8px;background:#103F3C;box-sizing:border-box}
-#introGate .intro-cta::before{content:"";position:absolute;inset:-1px;border:2px solid #F2D184;border-radius:inherit;box-shadow:0 0 10px rgba(242,209,132,.65),0 0 24px rgba(198,161,91,.4);pointer-events:none;opacity:0;animation:introEntryPulse 2.4s ease-out infinite}
-#introGate .intro-cta-label{font-size:clamp(22px,5.5vw,28px);font-weight:700;line-height:1.5;letter-spacing:normal;color:#F2D184;text-shadow:0 0 7px rgba(242,209,132,.65),0 0 18px rgba(198,161,91,.4)}
-#introGate .intro-tap-icon{flex:none;display:block;width:28px;height:28px;stroke-width:2;color:#F2D184}
-#introGate .intro-enter-hint{font:700 clamp(18px,4.5vw,21px)/1.6 "Tajawal",Arial,sans-serif;color:#FFE66D;text-shadow:0 0 8px rgba(255,214,64,.5),0 0 20px rgba(255,190,0,.25);margin-top:-6px}
-#introGate:hover .intro-cta{background:#103F3C;border-color:#F2D184}
+#introGate .intro-cta{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:11px 24px;border:1.5px solid #C6A15B;border-radius:8px;background:#103F3C;box-shadow:0 0 12px rgba(198,161,91,.10);box-sizing:border-box}
+#introGate .intro-cta::before{content:"";position:absolute;inset:-1px;border:1px solid #DCC08A;border-radius:inherit;box-shadow:0 0 7px rgba(198,161,91,.23),0 0 14px rgba(198,161,91,.12);pointer-events:none;opacity:0;animation:introEntryPulse 3.4s ease-in-out 3}
+#introGate .intro-cta-label{font-size:clamp(22px,5.2vw,27px);font-weight:700;line-height:1.45;letter-spacing:normal;color:#E8CC94;text-shadow:0 0 5px rgba(198,161,91,.22)}
+#introGate .intro-entry-arrow{flex:none;display:block;width:23px;height:23px;stroke-width:1.6;color:#DAB87A}
+#introGate .intro-enter-hint{font:500 clamp(15px,3.8vw,17px)/1.5 "Tajawal",Arial,sans-serif;color:#D9BF89;text-shadow:0 0 5px rgba(198,161,91,.12);margin-top:-4px}
+#introGate:hover .intro-cta{background:#103F3C;border-color:#DCC08A}
 #introGate:focus-visible .intro-cta{outline:2px solid #F5F1E8;outline-offset:5px}
-#introGate:active .intro-cta{background:#103F3C;border-color:#FFE6A8}
-@keyframes introEntryPulse{0%{opacity:0;transform:scale(1)}25%{opacity:.95;transform:scale(1.02,1.05)}85%,100%{opacity:0;transform:scale(1.12,1.3)}}
+#introGate:active .intro-cta{background:#103F3C;border-color:#E8CC94}
+@keyframes introEntryPulse{0%,100%{opacity:0;transform:scale(1)}48%{opacity:.55;transform:scale(1.035)}}
 @media(prefers-reduced-motion:reduce){#introGate .intro-cta::before{animation:none}}
+@media(max-height:650px){#introGate{gap:10px;padding:14px;transform:none}#introGate img{max-height:26svh}#introGate .intro-cta{min-height:54px}}
+@media(max-width:360px){#introGate .intro-cta{padding:10px 15px;gap:8px}}
 .intro-screen.is-playing #introGate .intro-cta::before{animation:none}
 </style>
 </head>
-<body><div aria-label="مقدمة فيوليتا" aria-modal="true" class="intro-screen" id="brandIntro" role="dialog"><video aria-hidden="true" class="intro-video" disablepictureinpicture="" disableremoteplayback="" id="introVideo" playsinline="" preload="auto" src="assets/violeta-intro.mp4" webkit-playsinline="" x-webkit-airplay="deny"></video><button class="intro-gate" id="introGate" type="button"><img alt="VIOLETA" decoding="sync" fetchpriority="high" height="639" loading="eager" src="assets/violeta-intro-mark.png" width="640"/><span class="intro-cta"><svg class="intro-tap-icon" aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12V5a2 2 0 0 1 4 0v6l1-1a2 2 0 0 1 3 1 2 2 0 0 1 3 2v3c0 4-2 6-6 6h-1c-2 0-3-1-4-2l-5-6a1.7 1.7 0 0 1 2.5-2L9 15"/><path d="M5 5H3m3-3L5 1m10 1 1-1"/></svg><span class="intro-cta-label" data-ar="اكتشف فيوليتا" data-en="Discover VIOLETA">اكتشف فيوليتا</span></span><small class="intro-enter-hint" data-ar="اضغط للدخول" data-en="Tap to enter">اضغط للدخول</small></button></div>
+<body><div aria-label="مقدمة فيوليتا" aria-modal="true" class="intro-screen" id="brandIntro" role="dialog"><video aria-hidden="true" class="intro-video" disablepictureinpicture="" disableremoteplayback="" id="introVideo" playsinline="" preload="auto" src="assets/violeta-intro.mp4" webkit-playsinline="" x-webkit-airplay="deny"></video><button class="intro-gate" id="introGate" type="button"><img alt="VIOLETA" decoding="sync" fetchpriority="high" height="639" loading="eager" src="assets/violeta-intro-mark.png" width="640"/><span class="intro-cta"><svg class="intro-entry-arrow" aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="m11 5-7 7 7 7"/></svg><span class="intro-cta-label" data-ar="اكتشف فيوليتا" data-en="Discover VIOLETA">اكتشف فيوليتا</span></span><small class="intro-enter-hint" data-ar="اضغط للدخول" data-en="Tap to enter">اضغط للدخول</small></button></div>
 <div aria-hidden="true" class="page-loader" id="pageLoader"><img alt="" decoding="async" src="assets/violeta-logo.png"/></div>
 <header class="site-header" id="siteHeader">
 <a aria-label="VIOLETA home" class="brand" href="#top">
