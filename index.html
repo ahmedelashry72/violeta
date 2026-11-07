@@ -96,15 +96,15 @@
 /* Entry cue only: preserve the existing button, video and click handler. */
 #introGate{max-width:100%;box-sizing:border-box;padding:24px;gap:22px}
 #introGate span{animation:none;opacity:1}
-#introGate .intro-cta{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:64px;padding:12px 28px;border:2px solid #C6A15B;border-radius:8px;background:rgba(198,161,91,.14);box-sizing:border-box}
-#introGate .intro-cta::before{content:"";position:absolute;inset:-1px;border:1px solid #C6A15B;border-radius:inherit;pointer-events:none;opacity:0;animation:introEntryPulse 3s ease-out 3}
-#introGate .intro-cta-label{font-size:clamp(22px,5.5vw,28px);font-weight:700;line-height:1.5;letter-spacing:normal}
-#introGate .intro-tap-icon{flex:none;display:block;width:28px;height:28px;stroke-width:2}
+#introGate .intro-cta{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:64px;padding:12px 28px;border:2px solid #C6A15B;border-radius:8px;background:#103F3C;box-sizing:border-box}
+#introGate .intro-cta::before{content:"";position:absolute;inset:-1px;border:2px solid #F2D184;border-radius:inherit;box-shadow:0 0 10px rgba(242,209,132,.65),0 0 24px rgba(198,161,91,.4);pointer-events:none;opacity:0;animation:introEntryPulse 2.4s ease-out infinite}
+#introGate .intro-cta-label{font-size:clamp(22px,5.5vw,28px);font-weight:700;line-height:1.5;letter-spacing:normal;color:#F2D184;text-shadow:0 0 7px rgba(242,209,132,.65),0 0 18px rgba(198,161,91,.4)}
+#introGate .intro-tap-icon{flex:none;display:block;width:28px;height:28px;stroke-width:2;color:#F2D184}
 #introGate .intro-enter-hint{font:700 clamp(18px,4.5vw,21px)/1.6 "Tajawal",Arial,sans-serif;color:#FFE66D;text-shadow:0 0 8px rgba(255,214,64,.5),0 0 20px rgba(255,190,0,.25);margin-top:-6px}
-#introGate:hover .intro-cta{background:rgba(198,161,91,.16)}
+#introGate:hover .intro-cta{background:#103F3C;border-color:#F2D184}
 #introGate:focus-visible .intro-cta{outline:2px solid #F5F1E8;outline-offset:5px}
-#introGate:active .intro-cta{background:rgba(198,161,91,.22)}
-@keyframes introEntryPulse{0%{opacity:0;transform:scale(1)}20%{opacity:.55}85%,100%{opacity:0;transform:scale(1.09,1.22)}}
+#introGate:active .intro-cta{background:#103F3C;border-color:#FFE6A8}
+@keyframes introEntryPulse{0%{opacity:0;transform:scale(1)}25%{opacity:.95;transform:scale(1.02,1.05)}85%,100%{opacity:0;transform:scale(1.12,1.3)}}
 @media(prefers-reduced-motion:reduce){#introGate .intro-cta::before{animation:none}}
 .intro-screen.is-playing #introGate .intro-cta::before{animation:none}
 </style>
