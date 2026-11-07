@@ -96,11 +96,11 @@
 /* Entry cue only: preserve the existing button, video and click handler. */
 #introGate{max-width:100%;box-sizing:border-box;padding:24px;gap:22px}
 #introGate span{animation:none;opacity:1}
-#introGate .intro-cta{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:10px 24px;border:1px solid #C6A15B;border-radius:8px;background:rgba(198,161,91,.08);box-sizing:border-box}
+#introGate .intro-cta{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:64px;padding:12px 28px;border:2px solid #C6A15B;border-radius:8px;background:rgba(198,161,91,.14);box-sizing:border-box}
 #introGate .intro-cta::before{content:"";position:absolute;inset:-1px;border:1px solid #C6A15B;border-radius:inherit;pointer-events:none;opacity:0;animation:introEntryPulse 3s ease-out 3}
-#introGate .intro-cta-label{font-size:clamp(19px,5vw,24px);line-height:1.5;letter-spacing:normal}
-#introGate .intro-tap-icon{flex:none;display:block}
-#introGate .intro-enter-hint{font:500 15px/1.6 "Tajawal",Arial,sans-serif;color:#F5F1E8;margin-top:-10px}
+#introGate .intro-cta-label{font-size:clamp(22px,5.5vw,28px);font-weight:700;line-height:1.5;letter-spacing:normal}
+#introGate .intro-tap-icon{flex:none;display:block;width:28px;height:28px;stroke-width:2}
+#introGate .intro-enter-hint{font:700 clamp(18px,4.5vw,21px)/1.6 "Tajawal",Arial,sans-serif;color:#FFE66D;text-shadow:0 0 8px rgba(255,214,64,.5),0 0 20px rgba(255,190,0,.25);margin-top:-6px}
 #introGate:hover .intro-cta{background:rgba(198,161,91,.16)}
 #introGate:focus-visible .intro-cta{outline:2px solid #F5F1E8;outline-offset:5px}
 #introGate:active .intro-cta{background:rgba(198,161,91,.22)}
