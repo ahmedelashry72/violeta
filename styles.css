@@ -188,3 +188,35 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
 
 /* Production: no staging banner; header returns to viewport top. */
 .site-header{top:0;}
+
+
+/* VIOLETA spacing and typography refinements — review 2026-11-09 */
+/* CSS-only refinement. Intro, media, tracking and lead submission are preserved. */
+.contact-card .office-location-kicker{font-family:inherit;letter-spacing:normal}
+.section{padding-block:76px}
+.section-kicker{font-family:inherit;font-size:20px;line-height:1.5;letter-spacing:normal}
+.eyebrow{font-size:12px;line-height:1.7}
+.step-no,.why-list article>span,.package-head>span{font-size:16px;line-height:1.6}
+.why-section{margin-top:24px;padding-block:40px;min-height:0}
+.why-visual{min-height:0}
+.why-copy{padding:32px 48px}
+.why-list p{font-size:16px;line-height:1.8}
+.package-ribbon{font-family:inherit;font-size:14px;line-height:1.4}
+.section-heading{margin-bottom:38px}
+.idea-cta,.idea-inner{min-height:380px}
+.contact-section{padding-block:64px}
+.contact-links span{font-family:inherit;font-size:15px}
+@media(max-width:1000px){
+  .split{gap:24px}
+  .why-visual{aspect-ratio:4/3}
+  .why-copy{padding:32px}
+}
+@media(max-width:640px){
+  .section{padding-block:48px}
+  .section-kicker{font-size:18px}
+  .why-section{margin-top:12px;padding-block:0}
+  .why-copy{padding:32px 24px}
+  .section-heading{margin-bottom:28px}
+  .idea-cta,.idea-inner{min-height:320px}
+  .contact-section{padding-block:48px}
+}
