@@ -29,14 +29,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://violetaksa.com/styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
 
   <script type="application/ld+json">
   {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Organization",
+      "@type": ["Organization", "LocalBusiness"],
       "@id": "https://violetaksa.com/#organization",
       "name": "VIOLETA Interiors",
       "alternateName": "VIOLETA",
@@ -48,6 +48,14 @@
       "image": "https://violetaksa.com/assets/violeta-logo.png",
       "email": "info@violetaksa.com",
       "telephone": "+966555275203",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Taif Square, Building 1, First Floor, Office 16",
+          "addressLocality": "Taif",
+          "addressRegion": "Makkah Region",
+          "addressCountry": "SA"
+        },
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=21.3033772%2C40.4303500",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+966555275203",
@@ -303,7 +311,33 @@
       <div id="testimonialCards"></div>
     </section>
 
-    <section class="section contact-section" id="contact">
+    <section class="section local-service" aria-labelledby="local-service-title">
+  <div class="section-kicker" data-ar="خدماتنا في مكة المكرمة" data-en="OUR SERVICES IN MAKKAH">خدماتنا في مكة المكرمة</div>
+  <div class="section-heading">
+    <h2 id="local-service-title" data-ar="تصميم داخلي في مكة بخطة واضحة للمساحات السكنية والتجارية" data-en="Interior design in Makkah with a clear residential or commercial plan">تصميم داخلي في مكة بخطة واضحة للمساحات السكنية والتجارية</h2>
+  </div>
+  <div class="local-service-copy">
+    <p data-ar="في مشاريع مكة المكرمة نبدأ بتحديد طبيعة الاستخدام والاحتياجات اليومية للمكان: توزيع المجلس والصالة وغرف النوم أو متطلبات المحلات والمكاتب. نحول الفكرة إلى تصور 3D ومخططات ومواصفات قابلة للنقاش قبل اعتماد التنفيذ." data-en="For projects in Makkah, we start with the space's purpose and everyday needs, whether a majlis, living area, bedrooms, shop or office. We translate the brief into 3D concepts, drawings and specifications for review before execution.">في مشاريع مكة المكرمة نبدأ بتحديد طبيعة الاستخدام والاحتياجات اليومية للمكان: توزيع المجلس والصالة وغرف النوم أو متطلبات المحلات والمكاتب. نحول الفكرة إلى تصور 3D ومخططات ومواصفات قابلة للنقاش قبل اعتماد التنفيذ.</p>
+    <p data-ar="المقر الرئيسي لفيوليتا في الطائف، ونخدم مشاريع مكة بالتنسيق المسبق للمشاورة والمعاينة والقياسات وفق نطاق المشروع. نوضح ما يشمله عرض السعر وخطوات العمل بدل تقديم وعد عام بالتنفيذ قبل دراسة الموقع." data-en="VIOLETA is based in Taif and serves Makkah projects through prearranged consultations, site surveys and measurements according to scope. We clarify quotation inclusions and project stages before promising execution.">المقر الرئيسي لفيوليتا في الطائف، ونخدم مشاريع مكة بالتنسيق المسبق للمشاورة والمعاينة والقياسات وفق نطاق المشروع. نوضح ما يشمله عرض السعر وخطوات العمل بدل تقديم وعد عام بالتنفيذ قبل دراسة الموقع.</p>
+    <div class="local-service-answer">
+      <h3 data-ar="هل يمكن طلب تصميم 3D في مكة قبل بدء التشطيبات؟" data-en="Can I request 3D design before finishing work in Makkah?">هل يمكن طلب تصميم 3D في مكة قبل بدء التشطيبات؟</h3>
+      <p data-ar="نعم، يمكن البدء بدراسة التوزيع والتصورات ثلاثية الأبعاد والمخططات حسب نطاق الخدمة، ثم تحديد أعمال التنفيذ بصورة منفصلة." data-en="Yes. We can begin with space planning, 3D concepts and technical drawings according to scope, then define execution work separately.">نعم، يمكن البدء بدراسة التوزيع والتصورات ثلاثية الأبعاد والمخططات حسب نطاق الخدمة، ثم تحديد أعمال التنفيذ بصورة منفصلة.</p>
+    </div>
+  </div>
+</section>
+<section class="section service-areas" aria-labelledby="service-areas-title">
+  <div class="section-kicker" data-ar="مناطق خدمتنا" data-en="WHERE WE WORK">مناطق خدمتنا</div>
+  <div class="section-heading">
+    <h2 id="service-areas-title" data-ar="تصميم داخلي وتنفيذ في ثلاث مدن." data-en="Interior design and execution across three cities.">تصميم داخلي وتنفيذ في ثلاث مدن.</h2>
+    <p data-ar="نقدم خدمات التصميم الداخلي والتأثيث والتنفيذ للمشاريع السكنية والتجارية في الطائف ومكة المكرمة وجدة، حسب نطاق كل مشروع." data-en="We offer interior design, furnishing and execution services for residential and commercial projects in Taif, Makkah and Jeddah, tailored to each project's scope.">نقدم خدمات التصميم الداخلي والتأثيث والتنفيذ للمشاريع السكنية والتجارية في الطائف ومكة المكرمة وجدة، حسب نطاق كل مشروع.</p>
+  </div>
+  <nav class="service-areas-links" aria-label="صفحات المدن المخدومة">
+    <a href="/interior-design-taif/" data-city="taif"><span data-ar="تصميم داخلي في الطائف" data-en="Interior design in Taif">تصميم داخلي في الطائف</span></a>
+    <a href="/interior-design-makkah/" data-city="makkah"><span data-ar="تصميم داخلي في مكة المكرمة" data-en="Interior design in Makkah">تصميم داخلي في مكة المكرمة</span></a>
+    <a href="/interior-design-jeddah/" data-city="jeddah"><span data-ar="تصميم داخلي في جدة" data-en="Interior design in Jeddah">تصميم داخلي في جدة</span></a>
+  </nav>
+</section>
+<section class="section contact-section" id="contact">
       <div class="contact-card reveal">
         <div>
           <div class="section-kicker light" data-ar="خلّنا نبدأ" data-en="LET'S START">خلّنا نبدأ</div>
