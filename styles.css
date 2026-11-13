@@ -226,9 +226,8 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
 .service-areas .section-heading{margin-bottom:28px}
 .service-areas .section-heading h2,.local-service .section-heading h2{font-size:clamp(30px,4vw,52px);line-height:1.15}
 .service-areas-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.service-areas-links a{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:76px;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.65);font-weight:700;line-height:1.6;transition:border-color .2s ease,transform .2s ease}
+.service-areas-links a{display:flex;align-items:center;justify-content:flex-start;gap:14px;min-height:76px;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.65);font-weight:700;line-height:1.6;transition:border-color .2s ease,transform .2s ease}
 .service-areas-links a:hover,.service-areas-links a:focus-visible{border-color:var(--gold);transform:translateY(-2px)}
-.service-areas-arrow{color:var(--gold-text);font-size:20px}
 .local-service{padding-top:88px;padding-bottom:76px;border-top:1px solid var(--line)}
 .local-service .section-heading{margin-bottom:24px}
 .local-service-copy{max-width:960px;display:grid;gap:16px}
