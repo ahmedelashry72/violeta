@@ -119,7 +119,7 @@
 .intro-screen.is-playing #introGate .intro-cta,.intro-screen.is-playing #introGate .intro-cta::before{animation:none}
 </style>
 </head>
-<body><div aria-label="مقدمة فيوليتا" aria-modal="true" class="intro-screen" id="brandIntro" role="dialog"><video aria-hidden="true" class="intro-video" disablepictureinpicture="" disableremoteplayback="" id="introVideo" playsinline="" preload="auto" src="assets/violeta-intro.mp4" webkit-playsinline="" x-webkit-airplay="deny"></video><button class="intro-gate" id="introGate" type="button"><img alt="VIOLETA" decoding="sync" fetchpriority="high" height="639" loading="eager" src="assets/violeta-intro-mark.png" width="640"/><span class="intro-cta"><span class="intro-cta-label" data-ar="اكتشف فيوليتا" data-en="Discover VIOLETA">اكتشف فيوليتا</span></span><small class="intro-enter-hint" data-ar="اضغط للدخول" data-en="Tap to enter">اضغط للدخول</small></button></div>
+<body><div aria-label="مقدمة فيوليتا" aria-modal="true" class="intro-screen" id="brandIntro" role="dialog"><video aria-hidden="true" class="intro-video" disablepictureinpicture="" disableremoteplayback="" id="introVideo" playsinline="" preload="none" src="assets/violeta-intro.mp4" webkit-playsinline="" x-webkit-airplay="deny"></video><button class="intro-gate" id="introGate" type="button"><img alt="VIOLETA" decoding="sync" fetchpriority="high" height="639" loading="eager" src="assets/violeta-intro-mark.png" width="640"/><span class="intro-cta"><span class="intro-cta-label" data-ar="اكتشف فيوليتا" data-en="Discover VIOLETA">اكتشف فيوليتا</span></span><small class="intro-enter-hint" data-ar="اضغط للدخول" data-en="Tap to enter">اضغط للدخول</small></button></div>
 <div aria-hidden="true" class="page-loader" id="pageLoader"><img alt="" decoding="async" src="assets/violeta-logo.png"/></div>
 <header class="site-header" id="siteHeader">
 <a aria-label="VIOLETA home" class="brand" href="#top">
@@ -463,7 +463,7 @@ v.addEventListener('ended',close);v.addEventListener('error',close);
 // Production: no staging-only replay control.
 document.addEventListener('keydown',e=>{if(box.hidden||closing)return;if(e.key==='Escape')close();else if(e.key==='Tab')e.preventDefault()});
 let seen=false;try{seen=!!sessionStorage.getItem('violeta_intro_seen')}catch{}
-if(seen){box.hidden=true;inert(false)}else{inert(true);if(v.error)close()}
+if(seen){box.hidden=true;inert(false)}else{v.preload='auto';v.load();inert(true);if(v.error)close()}
 })();
 </script>
 <script>
