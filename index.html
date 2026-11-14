@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html dir="rtl" lang="ar">
+<html class="intro-gated" dir="rtl" lang="ar">
 <head><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-H8D81FKVLE"></script><script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -450,7 +450,7 @@
 (()=>{const box=document.getElementById('brandIntro'),v=document.getElementById('introVideo'),gate=document.getElementById('introGate'),main=document.querySelector('main'),head=document.querySelector('header');
 let started=false,closing=false,previous,guard,startGuard,leaveT;
 const inert=on=>{main.inert=on;head.inert=on};
-function close(){if(closing)return;closing=true;clearTimeout(guard);clearTimeout(startGuard);try{v.pause()}catch{}try{sessionStorage.setItem('violeta_intro_seen','1')}catch{}inert(false);box.classList.add('is-leaving');clearTimeout(leaveT);leaveT=setTimeout(()=>{box.hidden=true;box.classList.remove('is-leaving','is-playing');previous&&previous.focus&&previous.focus({preventScroll:true})},850)}
+function close(){if(closing)return;document.documentElement.classList.add('intro-hero-ready');closing=true;clearTimeout(guard);clearTimeout(startGuard);try{v.pause()}catch{}try{sessionStorage.setItem('violeta_intro_seen','1')}catch{}inert(false);box.classList.add('is-leaving');clearTimeout(leaveT);leaveT=setTimeout(()=>{box.hidden=true;box.classList.remove('is-leaving','is-playing');previous&&previous.focus&&previous.focus({preventScroll:true})},850)}
 function open(){clearTimeout(leaveT);previous=document.activeElement;started=false;closing=false;try{v.pause();v.currentTime=0}catch{}box.classList.remove('is-playing','is-leaving');box.hidden=false;inert(true);gate.disabled=false;gate.focus({preventScroll:true})}
 gate.addEventListener('click',()=>{if(started||closing)return;started=true;gate.disabled=true;
  /* playback and sound start synchronously inside this tap (required by iOS Safari) */
@@ -459,12 +459,12 @@ gate.addEventListener('click',()=>{if(started||closing)return;started=true;gate.
  if(p&&p.catch)p.catch(close);
  startGuard=setTimeout(()=>{if(!(v.currentTime>0))close()},5000);
  guard=setTimeout(close,((v.duration>0&&isFinite(v.duration)?v.duration:6)+4)*1000)});
-v.addEventListener('playing',()=>clearTimeout(startGuard));
+v.addEventListener('playing',()=>{document.documentElement.classList.add('intro-hero-ready');clearTimeout(startGuard)});
 v.addEventListener('ended',close);v.addEventListener('error',close);
 // Production: no staging-only replay control.
 document.addEventListener('keydown',e=>{if(box.hidden||closing)return;if(e.key==='Escape')close();else if(e.key==='Tab')e.preventDefault()});
 let seen=false;try{seen=!!sessionStorage.getItem('violeta_intro_seen')}catch{}
-if(seen){box.hidden=true;inert(false)}else{v.preload='auto';v.load();inert(true);if(v.error)close()}
+if(seen){box.hidden=true;inert(false)}else{v.preload='metadata';v.load();inert(true);if(v.error)close()}
 })();
 </script>
 <script>
