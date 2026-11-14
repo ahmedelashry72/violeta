@@ -247,11 +247,3 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
     background-image:url('/.netlify/images?url=/assets/images/majlis-05.webp&w=768&fm=webp&q=72')!important;
   }
 }
-/* Defer rendering complex offscreen sections until they approach the viewport.
-   Keep the hero, intro and navigation untouched to preserve first interaction. */
-@supports(content-visibility:auto){
-  main > section.section:not(.hero):not(.local-service):not(.service-areas){
-    content-visibility:auto;
-    contain-intrinsic-size:auto 720px;
-  }
-}
