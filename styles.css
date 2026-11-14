@@ -247,3 +247,7 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
     background-image:url('/.netlify/images?url=/assets/images/majlis-05.webp&w=768&fm=webp&q=72')!important;
   }
 }
+/* Performance: on the landing page only, skip loading the hero slideshow
+   behind the intro gate until the video starts or the gate closes.
+   Returning visitors (intro-skip) still see the hero normally. */
+html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:none}
