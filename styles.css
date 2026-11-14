@@ -239,3 +239,15 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
 /* Smoothness: offscreen layers do not animate; header stays visually opaque. */
 .hero-slide:not(.is-active){animation-play-state:paused!important}
 .site-header.scrolled{backdrop-filter:none;-webkit-backdrop-filter:none}
+
+/* Responsive image delivery for VIOLETA's first hero slide.
+   Mobile devices request a 768 px variant, not the desktop-sized image. */
+@media(max-width:767px){
+  .hero-slide:first-child{
+    background-image:url('/.netlify/images?url=/assets/images/majlis-05.webp&w=768&fm=webp&q=72')!important;
+  }
+}
+/* Performance: on the landing page only, skip loading the hero slideshow
+   behind the intro gate until the video starts or the gate closes.
+   Returning visitors (intro-skip) still see the hero normally. */
+html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:none}

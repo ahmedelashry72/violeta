@@ -289,14 +289,33 @@ if (heroSection && 'IntersectionObserver' in window) {
   heroVisibility.observe(heroSection);
 }
 
+// Preload just the next slide. Later slides load one transition early,
+// avoiding competing requests during the initial page render.
+function prepareHeroSlide(index) {
+  const slide = heroSlides[index];
+  if (!slide || !slide.dataset.bgSrc) return;
+  // Use an iPhone-sized image for later slides rather than the 1440 px desktop variant.
+  let imageUrl = slide.dataset.bgSrc;
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    imageUrl = imageUrl.replace('w=1440', 'w=768').replace('q=76', 'q=72');
+  }
+  slide.style.backgroundImage = 'url("' + imageUrl + '")';
+  delete slide.dataset.bgSrc;
+}
+
 if (heroSlides.length > 1) {
+  // Don't compete with the first visible image during initial page rendering.
+  setTimeout(() => prepareHeroSlide(1), 1200);
   setInterval(() => {
     if (document.hidden || !heroIsVisible ||
         document.body.classList.contains('motion-paused')) return;
 
+    const nextIndex = (heroSlideIndex + 1) % heroSlides.length;
+    prepareHeroSlide(nextIndex);
     heroSlides[heroSlideIndex]?.classList.remove('is-active');
-    heroSlideIndex = (heroSlideIndex + 1) % heroSlides.length;
+    heroSlideIndex = nextIndex;
     heroSlides[heroSlideIndex]?.classList.add('is-active');
+    prepareHeroSlide((heroSlideIndex + 1) % heroSlides.length);
   }, 5500);
 }
 
