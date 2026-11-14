@@ -13,7 +13,7 @@
 <meta content="#103F3C" name="theme-color"/>
 <!-- Prioritize the intro brand mark and the font for the first visible screen. -->
 <link as="image" fetchpriority="high" href="/.netlify/images?url=/assets/violeta-intro-mark.png&amp;w=480&amp;fm=webp&amp;q=78" rel="preload"/>
-<link as="font" crossorigin="" href="assets/fonts/tajawal-500.ttf" rel="preload" type="font/ttf"/>
+<!-- Brand fonts are loaded by styles.css as needed; avoid competing initial preload. -->
 
 <script>try{if(sessionStorage.getItem("violeta_intro_seen"))document.documentElement.classList.add("intro-skip")}catch(e){}</script>
 <meta content="index, follow, max-image-preview:large" name="robots"/>
