@@ -159,25 +159,22 @@ function trackEvent(
 // Page Load
 // ======================================================
 
-window.addEventListener(
-  'load',
-  () => {
-    setTimeout(() => {
-      $('#pageLoader')
-        ?.classList
-        .add('is-hidden');
-    }, 350);
+// Reveal the page as soon as its markup is parsed rather than waiting for all media.
+function revealPage() {
+  requestAnimationFrame(() => {
+    $('#pageLoader')?.classList.add('is-hidden');
+  });
+}
 
-    trackEvent(
-      'page_view',
-      'home',
-      {
-        title:
-          document.title
-      }
-    );
-  }
-);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', revealPage, { once: true });
+} else {
+  revealPage();
+}
+
+window.addEventListener('load', () => {
+  trackEvent('page_view', 'home', { title: document.title });
+}, { once: true });
 
 
 window.addEventListener(
@@ -229,20 +226,23 @@ const mainNav =
   $('#mainNav');
 
 
-window.addEventListener(
-  'scroll',
-  () => {
-    header
-      ?.classList
-      .toggle(
-        'scrolled',
-        window.scrollY > 25
-      );
-  },
-  {
-    passive: true
+let headerUpdateQueued = false;
+
+function syncHeaderScrollState() {
+  headerUpdateQueued = false;
+  if (!header) return;
+  const shouldScrollStyle = window.scrollY > 25;
+  if (header.classList.contains('scrolled') !== shouldScrollStyle) {
+    header.classList.toggle('scrolled', shouldScrollStyle);
   }
-);
+}
+
+window.addEventListener('scroll', () => {
+  if (headerUpdateQueued) return;
+  headerUpdateQueued = true;
+  requestAnimationFrame(syncHeaderScrollState);
+}, { passive: true });
+syncHeaderScrollState();
 
 
 menuToggle?.addEventListener(
@@ -279,29 +279,25 @@ const heroSlides =
 let heroSlideIndex = 0;
 
 
+// Stop unnecessary slide repaints when the user is elsewhere on the page.
+let heroIsVisible = true;
+const heroSection = document.querySelector('.hero');
+if (heroSection && 'IntersectionObserver' in window) {
+  const heroVisibility = new IntersectionObserver(entries => {
+    heroIsVisible = !!entries[0]?.isIntersecting;
+  }, { threshold: 0.01 });
+  heroVisibility.observe(heroSection);
+}
+
 if (heroSlides.length > 1) {
-  setInterval(
-    () => {
-      heroSlides[
-        heroSlideIndex
-      ]?.classList.remove(
-        'is-active'
-      );
+  setInterval(() => {
+    if (document.hidden || !heroIsVisible ||
+        document.body.classList.contains('motion-paused')) return;
 
-      heroSlideIndex =
-        (
-          heroSlideIndex + 1
-        ) %
-        heroSlides.length;
-
-      heroSlides[
-        heroSlideIndex
-      ]?.classList.add(
-        'is-active'
-      );
-    },
-    5500
-  );
+    heroSlides[heroSlideIndex]?.classList.remove('is-active');
+    heroSlideIndex = (heroSlideIndex + 1) % heroSlides.length;
+    heroSlides[heroSlideIndex]?.classList.add('is-active');
+  }, 5500);
 }
 
 
