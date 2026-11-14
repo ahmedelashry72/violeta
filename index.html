@@ -464,7 +464,7 @@ v.addEventListener('ended',close);v.addEventListener('error',close);
 // Production: no staging-only replay control.
 document.addEventListener('keydown',e=>{if(box.hidden||closing)return;if(e.key==='Escape')close();else if(e.key==='Tab')e.preventDefault()});
 let seen=false;try{seen=!!sessionStorage.getItem('violeta_intro_seen')}catch{}
-if(seen){box.hidden=true;inert(false)}else{v.preload='metadata';v.load();inert(true);if(v.error)close()}
+if(seen){box.hidden=true;inert(false)}else{if(!window.matchMedia('(max-width: 767px)').matches){v.preload='metadata';v.load()}inert(true);if(v.error)close()}
 })();
 </script>
 <script>
