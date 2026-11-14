@@ -289,14 +289,27 @@ if (heroSection && 'IntersectionObserver' in window) {
   heroVisibility.observe(heroSection);
 }
 
+// Preload just the next slide. Later slides load one transition early,
+// avoiding competing requests during the initial page render.
+function prepareHeroSlide(index) {
+  const slide = heroSlides[index];
+  if (!slide || !slide.dataset.bgSrc) return;
+  slide.style.backgroundImage = 'url("' + slide.dataset.bgSrc + '")';
+  delete slide.dataset.bgSrc;
+}
+
 if (heroSlides.length > 1) {
+  prepareHeroSlide(1);
   setInterval(() => {
     if (document.hidden || !heroIsVisible ||
         document.body.classList.contains('motion-paused')) return;
 
+    const nextIndex = (heroSlideIndex + 1) % heroSlides.length;
+    prepareHeroSlide(nextIndex);
     heroSlides[heroSlideIndex]?.classList.remove('is-active');
-    heroSlideIndex = (heroSlideIndex + 1) % heroSlides.length;
+    heroSlideIndex = nextIndex;
     heroSlides[heroSlideIndex]?.classList.add('is-active');
+    prepareHeroSlide((heroSlideIndex + 1) % heroSlides.length);
   }, 5500);
 }
 
