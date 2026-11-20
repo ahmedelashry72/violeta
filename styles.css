@@ -266,26 +266,68 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
 .footer-brand .footer-brand-lockup em{font:500 9px/1.4 Manrope,Arial,sans-serif;letter-spacing:0;font-style:normal;margin-top:5px}
 @media(max-width:640px){.site-header .brand{gap:8px}.site-header .brand img{width:42px;height:42px}.site-header .brand-word strong{font-size:16px}.site-header .brand-word small{font-size:8px;letter-spacing:.35em}.site-header .brand-word em{display:none}.footer-brand .footer-brand-lockup em{font-size:8px}}
 
-/* Intro brand consistency patch — preview only, original video and soundtrack remain intact.
-   Mask only the old tagline area and show SPACE + the approved descriptor. */
+/* Preview only: preserve the animated architectural video emblem and original audio.
+   Cover the legacy video lettering from approximately 80% of the video image down
+   and render the approved Violeta SPACE lockup over the original video.
+   No production site, motion controls, or analytics behavior is altered. */
 .intro-video-brand-patch{
-  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(100vw,640px,calc(100svh*1.0335));aspect-ratio:494/478;
-  z-index:2;pointer-events:none;opacity:0;transition:opacity .35s ease;
-  direction:ltr;text-align:center;color:#F5F1E8;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(100vw,640px,calc(100svh*1.0335));
+  aspect-ratio:494/478;
+  z-index:2;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .35s ease;
+  overflow:visible;
+  direction:ltr;
+  text-align:center;
+  color:#F5F1E8;
 }
 .intro-screen.is-playing .intro-video-brand-patch{opacity:1}
 .intro-video-brand-patch::before{
-  content:"";position:absolute;left:0;right:0;top:81%;bottom:0;
-  background:linear-gradient(to bottom,transparent 0%,rgba(30,62,59,.98) 21%,#1e3e3b 65%);
+  content:"";
+  position:absolute;
+  left:0;right:0;
+  top:78%;
+  bottom:-12%;
+  background:linear-gradient(
+    to bottom,
+    rgba(30,62,59,0),
+    rgba(30,62,59,.98) 7%,
+    #1e3e3b 15%,
+    #1e3e3b 100%
+  );
+}
+.intro-video-brand-patch .intro-video-wordmark{
+  position:absolute;
+  top:82%;
+  left:50%;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font:700 clamp(30px,7.2vw,52px)/1.12 Georgia,'Times New Roman',serif;
+  color:#F5F1E8;
 }
 .intro-video-brand-patch .intro-video-space{
-  position:absolute;top:85.5%;left:50%;transform:translateX(-50%);
-  display:block;white-space:nowrap;letter-spacing:.55em;padding-left:.55em;
-  font:600 clamp(13px,3.1vw,19px)/1.2 Manrope,Arial,sans-serif;color:#C6A15B;
+  position:absolute;
+  top:92.8%;
+  left:50%;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font:600 clamp(10px,2.55vw,17px)/1.2 Manrope,Arial,sans-serif;
+  color:#C6A15B;
+  letter-spacing:.5em;
+  padding-left:.5em;
 }
 .intro-video-brand-patch .intro-video-tagline{
-  position:absolute;top:93%;left:50%;transform:translateX(-50%);
-  display:block;white-space:nowrap;letter-spacing:.065em;
-  font:400 clamp(9px,2.35vw,13px)/1.3 Manrope,Arial,sans-serif;color:#F5F1E8;
+  position:absolute;
+  top:100.7%;
+  left:50%;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font:400 clamp(8px,1.88vw,12px)/1.35 Manrope,Arial,sans-serif;
+  letter-spacing:.06em;
+  color:#F5F1E8;
 }
