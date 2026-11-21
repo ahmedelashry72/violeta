@@ -277,9 +277,12 @@ const heroSlides =
   $$('.hero-slide');
 
 let heroSlideIndex = 0;
+let heroTransitioning = false;
+const heroFadeMs = 1850;
+const heroImageJobs = new Map();
 
-
-// Stop unnecessary slide repaints when the user is elsewhere on the page.
+// The approved introduction remains untouched. Pause background work when
+// the hero is outside the viewport or the intro video is playing.
 let heroIsVisible = true;
 const heroSection = document.querySelector('.hero');
 if (heroSection && 'IntersectionObserver' in window) {
@@ -289,36 +292,89 @@ if (heroSection && 'IntersectionObserver' in window) {
   heroVisibility.observe(heroSection);
 }
 
-// Preload just the next slide. Later slides load one transition early,
-// avoiding competing requests during the initial page render.
+// A background must be decoded *before* it becomes a visible slide.
+// Otherwise an unloaded image can expose the teal background between frames.
 function prepareHeroSlide(index) {
   const slide = heroSlides[index];
-  if (!slide || !slide.dataset.bgSrc) return;
-  // Use an iPhone-sized image for later slides rather than the 1440 px desktop variant.
+  if (!slide) return Promise.resolve(false);
+  if (!slide.dataset.bgSrc) return Promise.resolve(true);
+  if (heroImageJobs.has(index)) return heroImageJobs.get(index);
+
   let imageUrl = slide.dataset.bgSrc;
   if (window.matchMedia('(max-width: 767px)').matches) {
     imageUrl = imageUrl.replace('w=1440', 'w=768').replace('q=76', 'q=72');
   }
-  slide.style.backgroundImage = 'url("' + imageUrl + '")';
-  delete slide.dataset.bgSrc;
+
+  const job = new Promise(resolve => {
+    const picture = new Image();
+    picture.onload = async () => {
+      try {
+        if (typeof picture.decode === 'function') await picture.decode();
+      } catch (_) {
+        // An onload-complete image is still usable in browsers without decode().
+      }
+      slide.style.backgroundImage = 'url("' + imageUrl + '")';
+      delete slide.dataset.bgSrc;
+      resolve(true);
+    };
+    picture.onerror = () => resolve(false);
+    picture.src = imageUrl;
+  }).then(success => {
+    if (!success) heroImageJobs.delete(index); // Retry, but never reveal a blank slide.
+    return success;
+  });
+  heroImageJobs.set(index, job);
+  return job;
 }
 
 if (heroSlides.length > 1) {
-  // Don't compete with the first visible image during initial page rendering.
-  setTimeout(() => prepareHeroSlide(1), 1200);
+  // Begin preloading only after the initial page has started rendering.
+  setTimeout(() => { void prepareHeroSlide(1); }, 1200);
+
   setInterval(() => {
-    if (document.hidden || !heroIsVisible ||
+    if (document.hidden || !heroIsVisible || heroTransitioning ||
         document.body.classList.contains('motion-paused')) return;
-
+    heroTransitioning = true;
     const nextIndex = (heroSlideIndex + 1) % heroSlides.length;
-    prepareHeroSlide(nextIndex);
-    heroSlides[heroSlideIndex]?.classList.remove('is-active');
-    heroSlideIndex = nextIndex;
-    heroSlides[heroSlideIndex]?.classList.add('is-active');
-    prepareHeroSlide((heroSlideIndex + 1) % heroSlides.length);
-  }, 5500);
-}
 
+    void prepareHeroSlide(nextIndex).then(ready => {
+      if (!ready || document.hidden ||
+          document.body.classList.contains('motion-paused')) {
+        heroTransitioning = false;
+        return;
+      }
+      const outgoing = heroSlides[heroSlideIndex];
+      const incoming = heroSlides[nextIndex];
+      if (!outgoing || !incoming || outgoing === incoming) {
+        heroTransitioning = false;
+        return;
+      }
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        incoming.classList.add('is-active');
+        outgoing.classList.remove('is-active');
+        heroSlideIndex = nextIndex;
+        heroTransitioning = false;
+        void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
+        return;
+      }
+
+      // Keep the fully rendered outgoing image in place. Fade the decoded,
+      // higher-layer incoming image over it, rather than fading both to black.
+      incoming.classList.add('is-entering');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        incoming.classList.add('is-visible');
+        setTimeout(() => {
+          outgoing.classList.remove('is-active');
+          incoming.classList.add('is-active');
+          incoming.classList.remove('is-visible', 'is-entering');
+          heroSlideIndex = nextIndex;
+          heroTransitioning = false;
+          void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
+        }, heroFadeMs + 60);
+      }));
+    }).catch(() => { heroTransitioning = false; });
+  }, 6300);
+}
 
 // ======================================================
 // Reveal on Scroll
