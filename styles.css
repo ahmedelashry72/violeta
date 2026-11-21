@@ -303,3 +303,12 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
 @media (prefers-reduced-motion: reduce) {
   .hero-slides .hero-slide.is-exiting { transition: none; }
 }
+
+/* Exposure-matched crossfade (laptop / desktop only).
+   Keeps the first slide original and reduces brightness pumping between images.
+   Each incoming image is normalized before it becomes visible. */
+@media (min-width: 900px) and (hover: hover) {
+  .hero-slides .hero-slide {
+    filter: brightness(var(--hero-exposure, 1));
+  }
+}
