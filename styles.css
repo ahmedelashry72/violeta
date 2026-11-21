@@ -303,3 +303,20 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
 @media (prefers-reduced-motion: reduce) {
   .hero-slides .hero-slide.is-exiting { transition: none; }
 }
+
+/* Static image treatment, review only. No JS luminance processing:
+   this tint is constant across the entire slide sequence, so it cannot
+   brighten a frame unexpectedly. Hero text and foreground are unaffected. */
+@media (min-width: 900px) and (hover: hover) {
+  .hero-slides {
+    isolation: isolate;
+  }
+  .hero-slides::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 63, 60, .17);
+    z-index: 3;
+    pointer-events: none;
+  }
+}
