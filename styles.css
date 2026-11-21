@@ -304,21 +304,18 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
   .hero-slides .hero-slide.is-exiting { transition: none; }
 }
 
-/* Restrained, matched exposure: desktop-only. No brightness amplification.
-   Static teal wash softens highlights uniformly throughout crossfades. */
+/* Static image treatment, review only. No JS luminance processing:
+   this tint is constant across the entire slide sequence, so it cannot
+   brighten a frame unexpectedly. Hero text and foreground are unaffected. */
 @media (min-width: 900px) and (hover: hover) {
   .hero-slides {
-    z-index: 0;
     isolation: isolate;
-  }
-  .hero-slides .hero-slide {
-    filter: brightness(var(--hero-exposure, 1));
   }
   .hero-slides::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(16, 63, 60, .12);
+    background: rgba(16, 63, 60, .17);
     z-index: 3;
     pointer-events: none;
   }
