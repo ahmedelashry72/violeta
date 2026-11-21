@@ -266,36 +266,8 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
 .footer-brand .footer-brand-lockup em{font:500 9px/1.4 Manrope,Arial,sans-serif;letter-spacing:0;font-style:normal;margin-top:5px}
 @media(max-width:640px){.site-header .brand{gap:8px}.site-header .brand img{width:42px;height:42px}.site-header .brand-word strong{font-size:16px}.site-header .brand-word small{font-size:8px;letter-spacing:.35em}.site-header .brand-word em{display:none}.footer-brand .footer-brand-lockup em{font-size:8px}}
 
-/* Intro preview correction — 21 Nov 2026.
-   The old MP4 already contains 'Violeta' baked into its frames. We do not
-   paint a replacement label over these frames. Play the original soundtrack
-   from the existing inline video, but show the approved cohesive SVG logo
-   instead of its outdated visual frames. No square mask, duplicated text,
-   or color-differing overlay. Source video/audio stays untouched. */
-.intro-screen.is-playing .intro-video { opacity:0 !important; }
-.intro-playback-brand {
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:min(72vw,315px,calc(80svh * .58));
-  height:auto;
-  max-height:68svh;
-  object-fit:contain;
-  transform:translate(-50%,calc(-50% - 1.4svh)) scale(.955);
-  transform-origin:center center;
-  opacity:0;
-  z-index:2;
-  pointer-events:none;
-  transition:opacity .3s ease,transform .8s cubic-bezier(.22,.8,.23,1);
-}
-.intro-screen.is-playing .intro-playback-brand{
-  opacity:1;
-  transform:translate(-50%,calc(-50% - 1.4svh)) scale(1);
-}
-.intro-screen.is-leaving .intro-playback-brand{opacity:0}
-@media(max-width:640px){
-  .intro-playback-brand {width:min(79vw,315px,calc(78svh * .57))}
-}
-@media(prefers-reduced-motion:reduce){
-  .intro-playback-brand{transition:none}
-}
+/* 21 Nov 2026: restore original cinematic playback and neutral brand backdrop.
+   No lighting overlay, opacity override, logo duplication or video filter. */
+.intro-screen,.intro-video{background-color:#103F3C}
+.intro-screen.is-playing .intro-video{opacity:1}
+.site-header:not(.scrolled) .brand img,.site-header.scrolled .brand img{filter:none;mix-blend-mode:normal}
