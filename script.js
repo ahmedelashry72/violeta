@@ -289,6 +289,17 @@ if (heroSection && 'IntersectionObserver' in window) {
   heroVisibility.observe(heroSection);
 }
 
+// Grade the first (initially visible) slide to the same restrained target,
+// before the carousel begins; this avoids a jump when the sequence loops.
+if (matchHeroExposure && heroSlides[0]) {
+  heroBaselineLuma.then(luma => {
+    if (!luma) return;
+    const calmTarget = Math.min(98, luma);
+    const gain = Math.max(0.65, Math.min(1, calmTarget / luma));
+    heroSlides[0].style.setProperty('--hero-exposure', gain.toFixed(3));
+  });
+}
+
 // Load and decode each upcoming slide before activating it.
 // This prevents a blank/partially rendered frame on slower laptop connections.
 const heroPreloads = new Map();
@@ -349,8 +360,10 @@ async function normalizeHeroExposure(slide, image) {
     Promise.resolve(heroImageLuma(image))
   ]);
   if (!baseline || !current || current < 1) return;
-  // Moderate correction only: avoid blown highlights or artificial-looking images.
-  const gain = Math.max(0.78, Math.min(1.28, Math.pow(baseline / current, 0.82)));
+  // Never brighten any photo. The prior 1.28 gain caused a visible light surge
+  // when a darker photo was revealed. Match to a calm, low exposure ceiling.
+  const calmTarget = Math.min(98, baseline);
+  const gain = Math.max(0.65, Math.min(1, calmTarget / current));
   slide.style.setProperty('--hero-exposure', gain.toFixed(3));
 }
 
