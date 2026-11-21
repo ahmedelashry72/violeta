@@ -251,3 +251,20 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
    behind the intro gate until the video starts or the gate closes.
    Returning visitors (intro-skip) still see the hero normally. */
 html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:none}
+
+/* Desktop-only VIOLETA intro background blending.
+   The approved MP4, audio, timing, mobile and tablet layouts are untouched.
+   Extends the existing 4% feather to a wider desktop-only edge blend.
+   Remove this block to roll back completely. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .intro-screen .intro-video {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 20%, #000 80%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 20%, #000 80%, transparent 100%);
+    mask-composite: intersect;
+  }
+}
