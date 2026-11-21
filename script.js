@@ -289,75 +289,34 @@ if (heroSection && 'IntersectionObserver' in window) {
   heroVisibility.observe(heroSection);
 }
 
-// Load and decode each upcoming slide before activating it.
-// This prevents a blank/partially rendered frame on slower laptop connections.
-const heroPreloads = new Map();
+// Preload just the next slide. Later slides load one transition early,
+// avoiding competing requests during the initial page render.
 function prepareHeroSlide(index) {
   const slide = heroSlides[index];
-  if (!slide) return Promise.resolve(false);
-  if (!slide.dataset.bgSrc) return Promise.resolve(true);
-  if (heroPreloads.has(index)) return heroPreloads.get(index);
-
+  if (!slide || !slide.dataset.bgSrc) return;
+  // Use an iPhone-sized image for later slides rather than the 1440 px desktop variant.
   let imageUrl = slide.dataset.bgSrc;
   if (window.matchMedia('(max-width: 767px)').matches) {
     imageUrl = imageUrl.replace('w=1440', 'w=768').replace('q=76', 'q=72');
   }
-
-  const preload = new Promise(resolve => {
-    const image = new Image();
-    image.decoding = 'async';
-    image.onload = async () => {
-      try { if (image.decode) await image.decode(); } catch (_) { /* image still loaded */ }
-      slide.style.backgroundImage = 'url("' + imageUrl + '")';
-      delete slide.dataset.bgSrc;
-      resolve(true);
-    };
-    image.onerror = () => resolve(false); // keep current slide if loading fails
-    image.src = imageUrl;
-  }).finally(() => heroPreloads.delete(index));
-
-  heroPreloads.set(index, preload);
-  return preload;
+  slide.style.backgroundImage = 'url("' + imageUrl + '")';
+  delete slide.dataset.bgSrc;
 }
 
 if (heroSlides.length > 1) {
-  let heroTransitioning = false;
-  const transitionMs = 2000;
-  const heroCanAnimate = () =>
-    !document.hidden && heroIsVisible &&
-    !document.body.classList.contains('motion-paused');
+  // Don't compete with the first visible image during initial page rendering.
+  setTimeout(() => prepareHeroSlide(1), 1200);
+  setInterval(() => {
+    if (document.hidden || !heroIsVisible ||
+        document.body.classList.contains('motion-paused')) return;
 
-  // Retain existing lazy loading: start only after initial hero rendering.
-  setTimeout(() => { void prepareHeroSlide(1); }, 1200);
-
-  setInterval(async () => {
-    if (!heroCanAnimate() || heroTransitioning) return;
-    heroTransitioning = true;
-    try {
-      const nextIndex = (heroSlideIndex + 1) % heroSlides.length;
-      const ready = await prepareHeroSlide(nextIndex);
-      if (!ready || !heroCanAnimate()) return;
-
-      // Commit the decoded image to the DOM before the opacity transition.
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      if (!heroCanAnimate()) return;
-
-      const previous = heroSlides[heroSlideIndex];
-      const incoming = heroSlides[nextIndex];
-
-      // The next image is fully visible UNDER the old image. Fade the old
-      // one out over it: no double-transparent dark flash at the midpoint.
-      incoming.classList.add('is-active');
-      previous.classList.add('is-exiting');
-      previous.classList.remove('is-active');
-      heroSlideIndex = nextIndex;
-
-      setTimeout(() => previous.classList.remove('is-exiting'), transitionMs + 100);
-      void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
-    } finally {
-      heroTransitioning = false;
-    }
-  }, 6500);
+    const nextIndex = (heroSlideIndex + 1) % heroSlides.length;
+    prepareHeroSlide(nextIndex);
+    heroSlides[heroSlideIndex]?.classList.remove('is-active');
+    heroSlideIndex = nextIndex;
+    heroSlides[heroSlideIndex]?.classList.add('is-active');
+    prepareHeroSlide((heroSlideIndex + 1) % heroSlides.length);
+  }, 5500);
 }
 
 
