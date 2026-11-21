@@ -199,7 +199,40 @@ async function sendLeadEmail(env, lead) {
   return result;
 }
 
-async function handleLead(request, env, origin) {
+// Optional staging-only mirror. Never blocks original D1 storage or Resend.
+async function mirrorLeadToHubTest(env, lead) {
+  const endpoint = String(env.HUB_TEST_SYNC_URL || "");
+  const secret = String(env.HUB_TEST_SYNC_SECRET || "");
+  if (!endpoint || secret.length < 32) return;
+  // Do not allow this test integration to point at an arbitrary host.
+  if (endpoint !==
+      "https://fppuzdwnfkrcpsalwocr.supabase.co/functions/v1/violeta-website-leads-test") {
+    console.error("Hub Test mirror: unexpected destination");
+    return;
+  }
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-violeta-hub-secret": secret,
+        },
+        body: JSON.stringify(lead),
+        signal: AbortSignal.timeout(6000),
+      });
+      if (response.ok) return;
+      console.error("Hub Test mirror: response", response.status, "attempt", attempt);
+      if (response.status === 400 || response.status === 401 ||
+          response.status === 403 || response.status === 413) return;
+    } catch (error) {
+      console.error("Hub Test mirror: network error", attempt, String(error?.name || error));
+    }
+    if (attempt < 3) await new Promise(resolve => setTimeout(resolve, attempt * 900));
+  }
+}
+
+async function handleLead(request, env, origin, ctx) {
   if (
     origin &&
     !ALLOWED_ORIGINS.has(origin)
@@ -312,6 +345,10 @@ async function handleLead(request, env, origin) {
         lead.idempotency_key
       )
       .run();
+
+    if (ctx?.waitUntil) {
+      ctx.waitUntil(mirrorLeadToHubTest(env, lead));
+    }
 
     let emailSent = false;
 
@@ -976,7 +1013,7 @@ async function sendDailyReport(env) {
 
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     const origin =
@@ -1005,7 +1042,8 @@ export default {
         return handleLead(
           request,
           env,
-          origin
+          origin,
+          ctx
         );
       }
 
