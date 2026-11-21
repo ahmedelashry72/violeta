@@ -291,3 +291,7 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
    .hero-shade at z-index:1 and looks brighter until the fade ends.
    Keep the shade continuously above both incoming and outgoing photos. */
 .hero-slides{z-index:0;isolation:isolate}
+
+/* Mobile-only video-edge color matching from actual iPhone screenshot.
+   Intro media, playback, geometry and all other styling are unchanged. */
+@media (max-width: 767px){.intro-screen{background-color:#12403C}}
