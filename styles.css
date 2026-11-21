@@ -307,8 +307,12 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
 /* Restrained, matched exposure: desktop-only. No brightness amplification.
    Static teal wash softens highlights uniformly throughout crossfades. */
 @media (min-width: 900px) and (hover: hover) {
+  .hero-slides {
+    z-index: 0;
+    isolation: isolate;
+  }
   .hero-slides .hero-slide {
-    filter: brightness(var(--hero-exposure, .88));
+    filter: brightness(var(--hero-exposure, 1));
   }
   .hero-slides::after {
     content: "";
