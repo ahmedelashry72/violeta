@@ -251,3 +251,29 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
    behind the intro gate until the video starts or the gate closes.
    Returning visitors (intro-skip) still see the hero normally. */
 html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:none}
+
+/* Hero-only fix: one fully visible decoded image beneath a smooth incoming
+   crossfade. Do not alter the approved intro screen or its video styles. */
+.hero-slides .hero-slide {
+  z-index:0;
+  opacity:0;
+  transform:scale(1.015);
+  animation:none !important;
+  transition:none;
+}
+.hero-slides .hero-slide.is-active {
+  z-index:1;
+  opacity:1;
+}
+.hero-slides .hero-slide.is-entering {
+  z-index:2;
+  opacity:0;
+  transition:none;
+}
+.hero-slides .hero-slide.is-entering.is-visible {
+  opacity:1;
+  transition:opacity 1850ms ease-in-out;
+}
+@media(prefers-reduced-motion:reduce) {
+  .hero-slides .hero-slide.is-entering.is-visible { transition:none; }
+}
