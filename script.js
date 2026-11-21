@@ -292,6 +292,68 @@ if (heroSection && 'IntersectionObserver' in window) {
 // Load and decode each upcoming slide before activating it.
 // This prevents a blank/partially rendered frame on slower laptop connections.
 const heroPreloads = new Map();
+
+// Match average exposure to the first hero image, without changing that image
+// or the approved mobile layout. All color analysis is performed once per image.
+const matchHeroExposure = window.matchMedia('(min-width: 900px) and (hover: hover)').matches;
+
+function heroImageLuma(image) {
+  if (!matchHeroExposure || !image?.naturalWidth || !image?.naturalHeight) return null;
+  try {
+    // Sample the center-cropped area actually visible under background-size:cover.
+    const canvas = document.createElement('canvas');
+    canvas.width = 48;
+    canvas.height = 27;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+    const vw = heroSection?.clientWidth || 1366;
+    const vh = heroSection?.clientHeight || 768;
+    const visibleRatio = vw / vh;
+    let sx = 0, sy = 0, sw = image.naturalWidth, sh = image.naturalHeight;
+    if (sw / sh > visibleRatio) {
+      sw = sh * visibleRatio;
+      sx = (image.naturalWidth - sw) / 2;
+    } else {
+      sh = sw / visibleRatio;
+      sy = (image.naturalHeight - sh) / 2;
+    }
+    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    const rgba = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let luminance = 0;
+    for (let i = 0; i < rgba.length; i += 4) {
+      luminance += rgba[i] * .2126 + rgba[i + 1] * .7152 + rgba[i + 2] * .0722;
+    }
+    return luminance / (rgba.length / 4);
+  } catch (_) {
+    return null; // If canvas access is blocked, use the original photo unmodified.
+  }
+}
+
+const heroBaselineLuma = matchHeroExposure && heroSlides[0]
+  ? new Promise(resolve => {
+      const computed = getComputedStyle(heroSlides[0]).backgroundImage;
+      const url = computed.match(/url\(["']?(.+?)["']?\)/)?.[1];
+      if (!url) { resolve(null); return; }
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => resolve(heroImageLuma(img));
+      img.onerror = () => resolve(null);
+      img.src = url;
+    })
+  : Promise.resolve(null);
+
+async function normalizeHeroExposure(slide, image) {
+  if (!matchHeroExposure) return;
+  const [baseline, current] = await Promise.all([
+    heroBaselineLuma,
+    Promise.resolve(heroImageLuma(image))
+  ]);
+  if (!baseline || !current || current < 1) return;
+  // Moderate correction only: avoid blown highlights or artificial-looking images.
+  const gain = Math.max(0.78, Math.min(1.28, Math.pow(baseline / current, 0.82)));
+  slide.style.setProperty('--hero-exposure', gain.toFixed(3));
+}
+
 function prepareHeroSlide(index) {
   const slide = heroSlides[index];
   if (!slide) return Promise.resolve(false);
@@ -308,6 +370,7 @@ function prepareHeroSlide(index) {
     image.decoding = 'async';
     image.onload = async () => {
       try { if (image.decode) await image.decode(); } catch (_) { /* image still loaded */ }
+      await normalizeHeroExposure(slide, image);
       slide.style.backgroundImage = 'url("' + imageUrl + '")';
       delete slide.dataset.bgSrc;
       resolve(true);
