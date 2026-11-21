@@ -93,7 +93,7 @@ body.motion-paused .bird-flock,body.motion-paused .wing,body.motion-paused .hero
 @media(prefers-reduced-motion:reduce){.bird-flock{display:none}.hero-slide{animation:none!important}}
 /* VIOLETA intro gate: single consolidated block (replaces earlier conflicting .intro-screen rules) */
 .intro-skip .intro-screen{display:none}
-.intro-screen{position:fixed;inset:0;z-index:2000;background:#103F3C;color:#C6A15B;display:flex;align-items:center;justify-content:center;overflow:hidden;opacity:1;transition:opacity .8s ease;-webkit-tap-highlight-color:transparent}
+.intro-screen{position:fixed;inset:0;z-index:2000;background:#14453C;color:#C6A15B;display:flex;align-items:center;justify-content:center;overflow:hidden;opacity:1;transition:opacity .8s ease;-webkit-tap-highlight-color:transparent}
 .intro-screen[hidden]{display:none}
 .intro-screen.is-leaving{opacity:0;pointer-events:none}
 .intro-screen~.bird-flock{display:none}
@@ -103,7 +103,7 @@ body.motion-paused .bird-flock,body.motion-paused .wing,body.motion-paused .hero
 .intro-gate img{display:block;width:auto;height:auto;max-width:min(46vw,200px);max-height:30svh;object-fit:contain;pointer-events:none}
 .intro-gate span{font-family:"Tajawal",Arial,sans-serif;font-weight:500;font-size:clamp(19px,5.2vw,25px);line-height:1.4;letter-spacing:.02em;color:#C6A15B;animation:introHint 2.8s ease-in-out infinite}
 @keyframes introHint{0%,100%{opacity:.72}50%{opacity:1}}
-.intro-video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,640px,calc(100svh*1.0335));height:auto;aspect-ratio:494/478;object-fit:contain;background:#103F3C;border:0;opacity:0;transition:opacity .6s ease;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(180deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(180deg,transparent,#000 4%,#000 96%,transparent);mask-composite:intersect}
+.intro-video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,640px,calc(100svh*1.0335));height:auto;aspect-ratio:494/478;object-fit:contain;background:#14453C;border:0;opacity:0;transition:opacity .6s ease;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(180deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(180deg,transparent,#000 4%,#000 96%,transparent);mask-composite:intersect}
 .intro-screen.is-playing .intro-video{opacity:1}
 .intro-screen.is-playing .intro-gate{opacity:0;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.intro-gate span{animation:none}.intro-screen{transition-duration:.01s}}
@@ -272,8 +272,16 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
 }
 .hero-slides .hero-slide.is-entering.is-visible {
   opacity:1;
-  transition:opacity 1850ms ease-in-out;
+  transition:opacity 2600ms cubic-bezier(.42,0,.58,1);
 }
 @media(prefers-reduced-motion:reduce) {
   .hero-slides .hero-slide.is-entering.is-visible { transition:none; }
 }
+
+/* Uniform cinematic color grade per source image: reduces visible brightness
+   jumps between the four photographs without dark frames or extra layers.
+   The existing fixed hero shade remains untouched. */
+.hero-slides .hero-slide{filter:brightness(.97) saturate(.92)}
+.hero-slides .hero-slide:nth-child(2){filter:brightness(1.10) saturate(.92)}
+.hero-slides .hero-slide:nth-child(3){filter:brightness(.92) saturate(.92)}
+.hero-slides .hero-slide:nth-child(4){filter:brightness(.87) saturate(.92)}
