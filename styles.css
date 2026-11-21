@@ -278,3 +278,28 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
     -webkit-filter: url("#violetaDesktopTealKey");
   }
 }
+
+/* VIOLETA hero transitions — fade the outgoing, already decoded slide over
+   a fully painted incoming slide. Avoid visible cuts or dark mid-fade flashes. */
+.hero-slides .hero-slide {
+  z-index: 0;
+  transition: none;
+}
+.hero-slides .hero-slide.is-active {
+  z-index: 1;
+  opacity: 1;
+  transition: none;
+}
+.hero-slides .hero-slide.is-exiting {
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 2000ms ease-in-out;
+  animation: kenburns 12s ease-out both;
+  will-change: opacity;
+}
+.hero-slides .hero-slide:not(.is-active):not(.is-exiting) {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slides .hero-slide.is-exiting { transition: none; }
+}
