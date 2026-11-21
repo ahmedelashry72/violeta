@@ -278,7 +278,7 @@ const heroSlides =
 
 let heroSlideIndex = 0;
 let heroTransitioning = false;
-const heroFadeMs = 1850;
+const heroFadeMs = 2600;
 const heroImageJobs = new Map();
 
 // The approved introduction remains untouched. Pause background work when
@@ -358,22 +358,34 @@ if (heroSlides.length > 1) {
         return;
       }
 
-      // Keep the fully rendered outgoing image in place. Fade the decoded,
-      // higher-layer incoming image over it, rather than fading both to black.
+      // Never hide the outgoing image until the incoming photo has actually
+      // reached full opacity. The transitionend event also handles slower
+      // browsers and avoids a hard cut from a fixed-duration timeout.
       incoming.classList.add('is-entering');
+      let committed = false;
+      let fallback;
+      const finish = () => {
+        if (committed) return;
+        committed = true;
+        clearTimeout(fallback);
+        incoming.removeEventListener('transitionend', onFadeEnd);
+        incoming.classList.add('is-active');
+        outgoing.classList.remove('is-active');
+        incoming.classList.remove('is-visible', 'is-entering');
+        heroSlideIndex = nextIndex;
+        heroTransitioning = false;
+        void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
+      };
+      const onFadeEnd = event => {
+        if (event.target === incoming && event.propertyName === 'opacity') finish();
+      };
+      incoming.addEventListener('transitionend', onFadeEnd);
       requestAnimationFrame(() => requestAnimationFrame(() => {
         incoming.classList.add('is-visible');
-        setTimeout(() => {
-          outgoing.classList.remove('is-active');
-          incoming.classList.add('is-active');
-          incoming.classList.remove('is-visible', 'is-entering');
-          heroSlideIndex = nextIndex;
-          heroTransitioning = false;
-          void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
-        }, heroFadeMs + 60);
+        fallback = setTimeout(finish, heroFadeMs + 500);
       }));
     }).catch(() => { heroTransitioning = false; });
-  }, 6300);
+  }, 7600);
 }
 
 // ======================================================
