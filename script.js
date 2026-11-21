@@ -277,9 +277,12 @@ const heroSlides =
   $$('.hero-slide');
 
 let heroSlideIndex = 0;
+let heroTransitioning = false;
+const heroFadeMs = 2600;
+const heroImageJobs = new Map();
 
-
-// Stop unnecessary slide repaints when the user is elsewhere on the page.
+// The approved introduction remains untouched. Pause background work when
+// the hero is outside the viewport or the intro video is playing.
 let heroIsVisible = true;
 const heroSection = document.querySelector('.hero');
 if (heroSection && 'IntersectionObserver' in window) {
@@ -289,77 +292,101 @@ if (heroSection && 'IntersectionObserver' in window) {
   heroVisibility.observe(heroSection);
 }
 
-// Load and decode each upcoming slide before activating it.
-// This prevents a blank/partially rendered frame on slower laptop connections.
-const heroPreloads = new Map();
+// A background must be decoded *before* it becomes a visible slide.
+// Otherwise an unloaded image can expose the teal background between frames.
 function prepareHeroSlide(index) {
   const slide = heroSlides[index];
   if (!slide) return Promise.resolve(false);
   if (!slide.dataset.bgSrc) return Promise.resolve(true);
-  if (heroPreloads.has(index)) return heroPreloads.get(index);
+  if (heroImageJobs.has(index)) return heroImageJobs.get(index);
 
   let imageUrl = slide.dataset.bgSrc;
   if (window.matchMedia('(max-width: 767px)').matches) {
     imageUrl = imageUrl.replace('w=1440', 'w=768').replace('q=76', 'q=72');
   }
 
-  const preload = new Promise(resolve => {
-    const image = new Image();
-    image.decoding = 'async';
-    image.onload = async () => {
-      try { if (image.decode) await image.decode(); } catch (_) { /* image still loaded */ }
+  const job = new Promise(resolve => {
+    const picture = new Image();
+    picture.onload = async () => {
+      try {
+        if (typeof picture.decode === 'function') await picture.decode();
+      } catch (_) {
+        // An onload-complete image is still usable in browsers without decode().
+      }
       slide.style.backgroundImage = 'url("' + imageUrl + '")';
       delete slide.dataset.bgSrc;
       resolve(true);
     };
-    image.onerror = () => resolve(false); // keep current slide if loading fails
-    image.src = imageUrl;
-  }).finally(() => heroPreloads.delete(index));
-
-  heroPreloads.set(index, preload);
-  return preload;
+    picture.onerror = () => resolve(false);
+    picture.src = imageUrl;
+  }).then(success => {
+    if (!success) heroImageJobs.delete(index); // Retry, but never reveal a blank slide.
+    return success;
+  });
+  heroImageJobs.set(index, job);
+  return job;
 }
 
 if (heroSlides.length > 1) {
-  let heroTransitioning = false;
-  const transitionMs = 2000;
-  const heroCanAnimate = () =>
-    !document.hidden && heroIsVisible &&
-    !document.body.classList.contains('motion-paused');
-
-  // Retain existing lazy loading: start only after initial hero rendering.
+  // Begin preloading only after the initial page has started rendering.
   setTimeout(() => { void prepareHeroSlide(1); }, 1200);
 
-  setInterval(async () => {
-    if (!heroCanAnimate() || heroTransitioning) return;
+  setInterval(() => {
+    if (document.hidden || !heroIsVisible || heroTransitioning ||
+        document.body.classList.contains('motion-paused')) return;
     heroTransitioning = true;
-    try {
-      const nextIndex = (heroSlideIndex + 1) % heroSlides.length;
-      const ready = await prepareHeroSlide(nextIndex);
-      if (!ready || !heroCanAnimate()) return;
+    const nextIndex = (heroSlideIndex + 1) % heroSlides.length;
 
-      // Commit the decoded image to the DOM before the opacity transition.
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      if (!heroCanAnimate()) return;
-
-      const previous = heroSlides[heroSlideIndex];
+    void prepareHeroSlide(nextIndex).then(ready => {
+      if (!ready || document.hidden ||
+          document.body.classList.contains('motion-paused')) {
+        heroTransitioning = false;
+        return;
+      }
+      const outgoing = heroSlides[heroSlideIndex];
       const incoming = heroSlides[nextIndex];
+      if (!outgoing || !incoming || outgoing === incoming) {
+        heroTransitioning = false;
+        return;
+      }
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        incoming.classList.add('is-active');
+        outgoing.classList.remove('is-active');
+        heroSlideIndex = nextIndex;
+        heroTransitioning = false;
+        void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
+        return;
+      }
 
-      // The next image is fully visible UNDER the old image. Fade the old
-      // one out over it: no double-transparent dark flash at the midpoint.
-      incoming.classList.add('is-active');
-      previous.classList.add('is-exiting');
-      previous.classList.remove('is-active');
-      heroSlideIndex = nextIndex;
-
-      setTimeout(() => previous.classList.remove('is-exiting'), transitionMs + 100);
-      void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
-    } finally {
-      heroTransitioning = false;
-    }
-  }, 6500);
+      // Never hide the outgoing image until the incoming photo has actually
+      // reached full opacity. The transitionend event also handles slower
+      // browsers and avoids a hard cut from a fixed-duration timeout.
+      incoming.classList.add('is-entering');
+      let committed = false;
+      let fallback;
+      const finish = () => {
+        if (committed) return;
+        committed = true;
+        clearTimeout(fallback);
+        incoming.removeEventListener('transitionend', onFadeEnd);
+        incoming.classList.add('is-active');
+        outgoing.classList.remove('is-active');
+        incoming.classList.remove('is-visible', 'is-entering');
+        heroSlideIndex = nextIndex;
+        heroTransitioning = false;
+        void prepareHeroSlide((nextIndex + 1) % heroSlides.length);
+      };
+      const onFadeEnd = event => {
+        if (event.target === incoming && event.propertyName === 'opacity') finish();
+      };
+      incoming.addEventListener('transitionend', onFadeEnd);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        incoming.classList.add('is-visible');
+        fallback = setTimeout(finish, heroFadeMs + 500);
+      }));
+    }).catch(() => { heroTransitioning = false; });
+  }, 7600);
 }
-
 
 // ======================================================
 // Reveal on Scroll
