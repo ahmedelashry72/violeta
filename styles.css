@@ -251,3 +251,55 @@ html[lang="en"] .contact-card .contact-links > a:not(.office-map-link){direction
    behind the intro gate until the video starts or the gate closes.
    Returning visitors (intro-skip) still see the hero normally. */
 html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:none}
+
+/* Desktop-only VIOLETA intro background blending.
+   The approved MP4, audio, timing, mobile and tablet layouts are untouched.
+   Extends the existing 4% feather to a wider desktop-only edge blend.
+   Remove this block to roll back completely. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .intro-screen .intro-video {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 20%, #000 80%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 20%, #000 80%, transparent 100%);
+    mask-composite: intersect;
+  }
+}
+
+/* Desktop-only video-background removal, proposed after color comparison.
+   Uses alpha based on dark teal/blue pixels; original video, sound and mobile untouched.
+   Preview-only; browser rendering and logo edges require laptop visual QA. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .intro-screen .intro-video {
+    filter: url("#violetaDesktopTealKey");
+    -webkit-filter: url("#violetaDesktopTealKey");
+  }
+}
+
+/* VIOLETA hero transitions — fade the outgoing, already decoded slide over
+   a fully painted incoming slide. Avoid visible cuts or dark mid-fade flashes. */
+.hero-slides .hero-slide {
+  z-index: 0;
+  transition: none;
+}
+.hero-slides .hero-slide.is-active {
+  z-index: 1;
+  opacity: 1;
+  transition: none;
+}
+.hero-slides .hero-slide.is-exiting {
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 2000ms ease-in-out;
+  animation: kenburns 12s ease-out both;
+  will-change: opacity;
+}
+.hero-slides .hero-slide:not(.is-active):not(.is-exiting) {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slides .hero-slide.is-exiting { transition: none; }
+}
