@@ -266,68 +266,36 @@ html.intro-gated:not(.intro-skip):not(.intro-hero-ready) .hero-slides{display:no
 .footer-brand .footer-brand-lockup em{font:500 9px/1.4 Manrope,Arial,sans-serif;letter-spacing:0;font-style:normal;margin-top:5px}
 @media(max-width:640px){.site-header .brand{gap:8px}.site-header .brand img{width:42px;height:42px}.site-header .brand-word strong{font-size:16px}.site-header .brand-word small{font-size:8px;letter-spacing:.35em}.site-header .brand-word em{display:none}.footer-brand .footer-brand-lockup em{font-size:8px}}
 
-/* Preview only: preserve the animated architectural video emblem and original audio.
-   Cover the legacy video lettering from approximately 80% of the video image down
-   and render the approved Violeta SPACE lockup over the original video.
-   No production site, motion controls, or analytics behavior is altered. */
-.intro-video-brand-patch{
+/* Intro preview correction — 21 Nov 2026.
+   The old MP4 already contains 'Violeta' baked into its frames. We do not
+   paint a replacement label over these frames. Play the original soundtrack
+   from the existing inline video, but show the approved cohesive SVG logo
+   instead of its outdated visual frames. No square mask, duplicated text,
+   or color-differing overlay. Source video/audio stays untouched. */
+.intro-screen.is-playing .intro-video { opacity:0 !important; }
+.intro-playback-brand {
   position:absolute;
-  left:50%;
   top:50%;
-  transform:translate(-50%,-50%);
-  width:min(100vw,640px,calc(100svh*1.0335));
-  aspect-ratio:494/478;
+  left:50%;
+  width:min(72vw,315px,calc(80svh * .58));
+  height:auto;
+  max-height:68svh;
+  object-fit:contain;
+  transform:translate(-50%,calc(-50% - 1.4svh)) scale(.955);
+  transform-origin:center center;
+  opacity:0;
   z-index:2;
   pointer-events:none;
-  opacity:0;
-  transition:opacity .35s ease;
-  overflow:visible;
-  direction:ltr;
-  text-align:center;
-  color:#F5F1E8;
+  transition:opacity .3s ease,transform .8s cubic-bezier(.22,.8,.23,1);
 }
-.intro-screen.is-playing .intro-video-brand-patch{opacity:1}
-.intro-video-brand-patch::before{
-  content:"";
-  position:absolute;
-  left:0;right:0;
-  top:78%;
-  bottom:-12%;
-  background:linear-gradient(
-    to bottom,
-    rgba(30,62,59,0),
-    rgba(30,62,59,.98) 7%,
-    #1e3e3b 15%,
-    #1e3e3b 100%
-  );
+.intro-screen.is-playing .intro-playback-brand{
+  opacity:1;
+  transform:translate(-50%,calc(-50% - 1.4svh)) scale(1);
 }
-.intro-video-brand-patch .intro-video-wordmark{
-  position:absolute;
-  top:82%;
-  left:50%;
-  transform:translateX(-50%);
-  white-space:nowrap;
-  font:700 clamp(30px,7.2vw,52px)/1.12 Georgia,'Times New Roman',serif;
-  color:#F5F1E8;
+.intro-screen.is-leaving .intro-playback-brand{opacity:0}
+@media(max-width:640px){
+  .intro-playback-brand {width:min(79vw,315px,calc(78svh * .57))}
 }
-.intro-video-brand-patch .intro-video-space{
-  position:absolute;
-  top:92.8%;
-  left:50%;
-  transform:translateX(-50%);
-  white-space:nowrap;
-  font:600 clamp(10px,2.55vw,17px)/1.2 Manrope,Arial,sans-serif;
-  color:#C6A15B;
-  letter-spacing:.5em;
-  padding-left:.5em;
-}
-.intro-video-brand-patch .intro-video-tagline{
-  position:absolute;
-  top:100.7%;
-  left:50%;
-  transform:translateX(-50%);
-  white-space:nowrap;
-  font:400 clamp(8px,1.88vw,12px)/1.35 Manrope,Arial,sans-serif;
-  letter-spacing:.06em;
-  color:#F5F1E8;
+@media(prefers-reduced-motion:reduce){
+  .intro-playback-brand{transition:none}
 }
